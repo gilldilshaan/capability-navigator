@@ -1,17 +1,10 @@
 import { ArrowDown } from "lucide-react";
-import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
+/** Static chain rendering — state changes only when the parent state changes. */
 export function ChainFlow({ chain, active = true }: { chain: string[]; active?: boolean }) {
-  const [step, setStep] = useState(active ? 0 : chain.length);
-
-  useEffect(() => {
-    if (!active) return;
-    setStep(0);
-    const timers = chain.map((_, i) => setTimeout(() => setStep(i + 1), 220 * (i + 1)));
-    return () => timers.forEach(clearTimeout);
-  }, [chain, active]);
+  const step = active ? chain.length : 0;
 
   return (
     <ol className="space-y-0">
