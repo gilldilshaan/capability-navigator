@@ -292,40 +292,37 @@ export function ParallaxProvider({ children }: { children: ReactNode }) {
     [patch],
   );
 
+  /** Computed synchronously on click — no progress animation. */
   const runChaos = useCallback(() => {
     setState((s) => {
-      if (s.chaosRunning || s.chaosToggles.length === 0) return s;
-      return { ...s, chaosRunning: true, chaosProgress: 0, chaosResult: null };
+      if (s.chaosToggles.length === 0) return s;
+      const selected = failureToggles.filter((f) => s.chaosToggles.includes(f.id));
+      const hit = selected.reduce((sum, f) => sum + f.resilienceHit, 0);
+      const removed = selected.flatMap((f) => f.removes);
+      const after = Math.max(18, BASE_RESILIENCE - hit);
+      return {
+        ...s,
+        chaosRunning: false,
+        chaosProgress: 100,
+        chaosResult: {
+          before: BASE_RESILIENCE,
+          after,
+          removed,
+          toggles: s.chaosToggles,
+          supplierRedundancy: 5,
+          capabilityRedundancy: 1,
+        },
+        activity: [
+          ...s.activity,
+          { id: nextId(), time: clock(150), channel: "SCENARIO", text: "Chaos simulation complete. 3 critical dependencies found." },
+        ],
+        audit: [
+          ...s.audit,
+          { id: nextId(), time: "09:12", label: "Chaos simulation completed", detail: "Hidden dependency exposed · CAP-PPC-004 shared by 5 suppliers", tone: "critical" as const },
+        ],
+      };
     });
-
-    [200, 500, 900, 1300, 1700, 2100].forEach((ms, i) => {
-      later(ms, () => patch({ chaosProgress: Math.round(((i + 1) / 6) * 100) }));
-    });
-
-    later(2300, () => {
-      setState((s) => {
-        const selected = failureToggles.filter((f) => s.chaosToggles.includes(f.id));
-        const hit = selected.reduce((sum, f) => sum + f.resilienceHit, 0);
-        const removed = selected.flatMap((f) => f.removes);
-        const after = Math.max(18, BASE_RESILIENCE - hit);
-        return {
-          ...s,
-          chaosRunning: false,
-          chaosProgress: 100,
-          chaosResult: {
-            before: BASE_RESILIENCE,
-            after,
-            removed,
-            toggles: s.chaosToggles,
-            supplierRedundancy: 5,
-            capabilityRedundancy: 1,
-          },
-        };
-      });
-      audit("09:12", "Chaos simulation completed", "Hidden dependency exposed · CAP-PPC-004 shared by 5 suppliers", "critical");
-      log(150, "SCENARIO", "Chaos simulation complete. 3 critical dependencies found.");
-    });
-  }, [audit, later, log, patch]);
+  }, []);
 
   const addResiliencePlan = useCallback(
     (id: string) => {
