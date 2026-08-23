@@ -13,8 +13,8 @@ export function RecoveryPathDetail({
 }: {
   path: RecoveryPath;
   onClose: () => void;
-  onApprove?: () => void;
-  recoveryStatus?: string;
+  onApprove?: (() => void) | undefined;
+  recoveryStatus?: string | undefined;
 }) {
   const score = scorePath(path);
   const title = path.id === "C" ? "Capability Reconstruction Path" : `${path.title} Path`;

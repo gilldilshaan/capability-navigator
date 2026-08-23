@@ -54,7 +54,7 @@ export function Panel({
 }: {
   children: ReactNode;
   className?: string;
-  tone?: "critical" | "info" | "success";
+  tone?: "critical" | "info" | "success" | undefined;
 }) {
   return (
     <section
