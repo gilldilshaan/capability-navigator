@@ -115,9 +115,20 @@
     border-color: var(--color-border);
   }
 
-  html {
-    color-scheme: light;
+  html,
+  html.dark,
+  body {
+    color-scheme: light only;
     background-color: var(--color-background);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html,
+    body {
+      color-scheme: light only;
+      background-color: var(--color-background);
+      color: var(--color-foreground);
+    }
   }
 
   body {
