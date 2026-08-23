@@ -14,6 +14,7 @@ import { Route as AuditRouteImport } from './routes/audit'
 import { Route as BreakMySupplyChainRouteImport } from './routes/break-my-supply-chain'
 import { Route as CapabilityMapRouteImport } from './routes/capability-map'
 import { Route as DisruptionsRouteImport } from './routes/disruptions'
+import { Route as IntegrationRouteImport } from './routes/integration'
 import { Route as RecoveryPathsRouteImport } from './routes/recovery-paths'
 import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as WorkforceRouteImport } from './routes/workforce'
@@ -43,6 +44,11 @@ const DisruptionsRoute = DisruptionsRouteImport.update({
   path: '/disruptions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IntegrationRoute = IntegrationRouteImport.update({
+  id: '/integration',
+  path: '/integration',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RecoveryPathsRoute = RecoveryPathsRouteImport.update({
   id: '/recovery-paths',
   path: '/recovery-paths',
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/break-my-supply-chain': typeof BreakMySupplyChainRoute
   '/capability-map': typeof CapabilityMapRoute
   '/disruptions': typeof DisruptionsRoute
+  '/integration': typeof IntegrationRoute
   '/recovery-paths': typeof RecoveryPathsRoute
   '/resources': typeof ResourcesRoute
   '/workforce': typeof WorkforceRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/break-my-supply-chain': typeof BreakMySupplyChainRoute
   '/capability-map': typeof CapabilityMapRoute
   '/disruptions': typeof DisruptionsRoute
+  '/integration': typeof IntegrationRoute
   '/recovery-paths': typeof RecoveryPathsRoute
   '/resources': typeof ResourcesRoute
   '/workforce': typeof WorkforceRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/break-my-supply-chain': typeof BreakMySupplyChainRoute
   '/capability-map': typeof CapabilityMapRoute
   '/disruptions': typeof DisruptionsRoute
+  '/integration': typeof IntegrationRoute
   '/recovery-paths': typeof RecoveryPathsRoute
   '/resources': typeof ResourcesRoute
   '/workforce': typeof WorkforceRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/break-my-supply-chain'
     | '/capability-map'
     | '/disruptions'
+    | '/integration'
     | '/recovery-paths'
     | '/resources'
     | '/workforce'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/break-my-supply-chain'
     | '/capability-map'
     | '/disruptions'
+    | '/integration'
     | '/recovery-paths'
     | '/resources'
     | '/workforce'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/break-my-supply-chain'
     | '/capability-map'
     | '/disruptions'
+    | '/integration'
     | '/recovery-paths'
     | '/resources'
     | '/workforce'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   BreakMySupplyChainRoute: typeof BreakMySupplyChainRoute
   CapabilityMapRoute: typeof CapabilityMapRoute
   DisruptionsRoute: typeof DisruptionsRoute
+  IntegrationRoute: typeof IntegrationRoute
   RecoveryPathsRoute: typeof RecoveryPathsRoute
   ResourcesRoute: typeof ResourcesRoute
   WorkforceRoute: typeof WorkforceRoute
@@ -171,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DisruptionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/integration': {
+      id: '/integration'
+      path: '/integration'
+      fullPath: '/integration'
+      preLoaderRoute: typeof IntegrationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/recovery-paths': {
       id: '/recovery-paths'
       path: '/recovery-paths'
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   BreakMySupplyChainRoute: BreakMySupplyChainRoute,
   CapabilityMapRoute: CapabilityMapRoute,
   DisruptionsRoute: DisruptionsRoute,
+  IntegrationRoute: IntegrationRoute,
   RecoveryPathsRoute: RecoveryPathsRoute,
   ResourcesRoute: ResourcesRoute,
   WorkforceRoute: WorkforceRoute,
