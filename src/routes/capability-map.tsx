@@ -30,7 +30,7 @@ export const Route = createFileRoute("/capability-map")({
       },
     ],
   }),
-  component: CapabilityMap;
+  component: CapabilityMap,
 });
 
 function CapabilityMap() {
