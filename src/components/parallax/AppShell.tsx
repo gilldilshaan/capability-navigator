@@ -85,6 +85,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     presentation,
     setPresentation,
     startDemo,
+    nextDemoStep,
+    demoTotalSteps,
     stopDemo,
     resetDemo,
     demoRunning,
