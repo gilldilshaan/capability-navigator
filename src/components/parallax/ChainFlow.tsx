@@ -26,10 +26,7 @@ export function ChainFlow({ chain, active = true }: { chain: string[]; active?: 
               <span className="num text-[10px] text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
               <span className={cn("text-[13px]", on ? "text-foreground" : "text-muted-foreground")}>{node}</span>
               {on && !isLast ? (
-                <span className="relative ml-auto flex size-1.5">
-                  <span className="pulse-ring absolute inline-flex size-1.5 rounded-full bg-info" />
-                  <span className="relative inline-flex size-1.5 rounded-full bg-info" />
-                </span>
+                <span className="ml-auto inline-flex size-1.5 rounded-full bg-info" />
               ) : null}
               {isLast && on ? (
                 <span className="ml-auto font-mono text-[10px] tracking-[0.08em] text-success uppercase">Outcome</span>
