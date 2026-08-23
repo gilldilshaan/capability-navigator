@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AlertOctagon, ArrowRight, CheckCircle2, GitBranch, Layers } from "lucide-react";
 
-import { AgentActivity } from "@/components/parallax/AgentActivity";
 import {
   DataRow,
   DemoTag,
@@ -97,7 +96,7 @@ function Disruptions() {
         </Panel>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid gap-4">
         <div className="space-y-4">
           <Panel tone={capabilityIdentified ? "success" : undefined}>
             <PanelHeader
@@ -152,7 +151,6 @@ function Disruptions() {
             </div>
           </Panel>
 
-
           <div className="grid gap-4 md:grid-cols-2">
             <Panel className="flex flex-col p-4">
               <GitBranch className="size-4 text-info" />
@@ -187,11 +185,6 @@ function Disruptions() {
           </div>
         </div>
 
-        <Panel className="hidden xl:block">
-          <div className="max-h-[720px] overflow-hidden">
-            <AgentActivity />
-          </div>
-        </Panel>
       </div>
     </div>
   );
