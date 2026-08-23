@@ -340,42 +340,46 @@ export function ParallaxProvider({ children }: { children: ReactNode }) {
   const setAgentPanelOpen = useCallback((on: boolean) => patch({ agentPanelOpen: on }), [patch]);
 
   const stopDemo = useCallback(() => {
-    clearTimers();
-    patch({ demoRunning: false, demoLabel: "" });
-  }, [clearTimers, patch]);
+    patch({ demoRunning: false, demoLabel: "", demoStep: 0 });
+  }, [patch]);
 
   const resetDemo = useCallback(() => {
-    clearTimers();
     setState({ ...initialState, presentation: state.presentation });
     navigate({ to: "/" });
-  }, [clearTimers, navigate, state.presentation]);
+  }, [navigate, state.presentation]);
+
+  /** Manual walkthrough: every step is advanced by a click, never by a timer. */
+  const demoSteps = useMemo(
+    () => [
+      { label: "Disruption detected", run: () => { patch({ incidentOpen: true }); navigate({ to: "/disruptions" }); } },
+      { label: "Agentic analysis", run: () => runAnalysis() },
+      { label: "Capability identified", run: () => navigate({ to: "/capability-map" }) },
+      { label: "Resource discovery", run: () => navigate({ to: "/resources" }) },
+      { label: "Recovery paths generated", run: () => navigate({ to: "/recovery-paths" }) },
+      { label: "Recommendation opened", run: () => patch({ selectedPathId: "C" }) },
+      { label: "Human approval", run: () => navigate({ to: "/audit" }) },
+      { label: "Recovery approved", run: () => approveRecovery() },
+      { label: "Break My Supply Chain", run: () => { navigate({ to: "/break-my-supply-chain" }); patch({ chaosToggles: ["supplier", "cert"] }); } },
+      { label: "Chaos simulation", run: () => runChaos() },
+    ],
+    [approveRecovery, navigate, patch, runAnalysis, runChaos],
+  );
 
   const startDemo = useCallback(() => {
-    clearTimers();
-    setState({ ...initialState, presentation: state.presentation, demoRunning: true, demoLabel: "Supplier failure detected" });
+    setState({ ...initialState, presentation: state.presentation, demoRunning: true, demoStep: 0, demoLabel: "Ready — advance step by step" });
     navigate({ to: "/" });
+  }, [navigate, state.presentation]);
 
-    const steps: { at: number; label: string; run: () => void }[] = [
-      { at: 1400, label: "Agent detection", run: () => { patch({ incidentOpen: true }); navigate({ to: "/disruptions" }); } },
-      { at: 2200, label: "Agentic analysis", run: () => runAnalysis() },
-      { at: 8200, label: "Capability identified", run: () => navigate({ to: "/capability-map" }) },
-      { at: 11200, label: "Resource discovery", run: () => navigate({ to: "/resources" }) },
-      { at: 14200, label: "Recovery paths generated", run: () => navigate({ to: "/recovery-paths" }) },
-      { at: 17200, label: "Recommendation opened", run: () => { patch({ selectedPathId: "C" }); } },
-      { at: 20200, label: "Human approval", run: () => navigate({ to: "/audit" }) },
-      { at: 22600, label: "Recovery approved", run: () => approveRecovery() },
-      { at: 25600, label: "Break My Supply Chain", run: () => { navigate({ to: "/break-my-supply-chain" }); patch({ chaosToggles: ["supplier", "cert"] }); } },
-      { at: 27600, label: "Chaos simulation", run: () => runChaos() },
-      { at: 31200, label: "Demo complete", run: () => patch({ demoRunning: false, demoLabel: "" }) },
-    ];
-
-    steps.forEach((step, i) => {
-      later(step.at, () => {
-        patch({ demoStep: i + 1, demoLabel: step.label });
-        step.run();
-      });
-    });
-  }, [approveRecovery, clearTimers, later, navigate, patch, runAnalysis, runChaos, state.presentation]);
+  const nextDemoStep = useCallback(() => {
+    const index = state.demoStep;
+    const step = demoSteps[index];
+    if (!step) {
+      patch({ demoRunning: false, demoStep: 0, demoLabel: "" });
+      return;
+    }
+    patch({ demoStep: index + 1, demoLabel: step.label });
+    step.run();
+  }, [demoSteps, patch, state.demoStep]);
 
   const value = useMemo<ParallaxApi>(
     () => ({
