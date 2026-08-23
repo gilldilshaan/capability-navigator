@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CapabilityMapRouteImport } from './routes/capability-map'
 import { Route as DisruptionsRouteImport } from './routes/disruptions'
+import { Route as ResourcesRouteImport } from './routes/resources'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const DisruptionsRoute = DisruptionsRouteImport.update({
   path: '/disruptions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResourcesRoute = ResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/capability-map': typeof CapabilityMapRoute
   '/disruptions': typeof DisruptionsRoute
+  '/resources': typeof ResourcesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/capability-map': typeof CapabilityMapRoute
   '/disruptions': typeof DisruptionsRoute
+  '/resources': typeof ResourcesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/capability-map': typeof CapabilityMapRoute
   '/disruptions': typeof DisruptionsRoute
+  '/resources': typeof ResourcesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/capability-map' | '/disruptions'
+  fullPaths: '/' | '/capability-map' | '/disruptions' | '/resources'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/capability-map' | '/disruptions'
-  id: '__root__' | '/' | '/capability-map' | '/disruptions'
+  to: '/' | '/capability-map' | '/disruptions' | '/resources'
+  id: '__root__' | '/' | '/capability-map' | '/disruptions' | '/resources'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CapabilityMapRoute: typeof CapabilityMapRoute
   DisruptionsRoute: typeof DisruptionsRoute
+  ResourcesRoute: typeof ResourcesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DisruptionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/resources': {
+      id: '/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof ResourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CapabilityMapRoute: CapabilityMapRoute,
   DisruptionsRoute: DisruptionsRoute,
+  ResourcesRoute: ResourcesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
