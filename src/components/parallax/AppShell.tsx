@@ -85,6 +85,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     presentation,
     setPresentation,
     startDemo,
+    nextDemoStep,
+    demoTotalSteps,
     stopDemo,
     resetDemo,
     demoRunning,
@@ -116,19 +118,21 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="ml-auto flex items-center gap-2">
             {demoRunning ? (
               <span className="hidden items-center gap-2 rounded-sm border border-info/40 bg-info/10 px-2.5 py-1.5 md:inline-flex">
-                <span className="relative flex size-1.5">
-                  <span className="pulse-ring absolute inline-flex size-1.5 rounded-full bg-info" />
-                  <span className="relative inline-flex size-1.5 rounded-full bg-info" />
-                </span>
+                <span className="inline-flex size-1.5 rounded-full bg-info" />
                 <span className="font-mono text-[11px] tracking-[0.08em] text-info uppercase">
-                  Demo {String(demoStep).padStart(2, "0")} · {demoLabel}
+                  Step {String(demoStep).padStart(2, "0")}/{String(demoTotalSteps).padStart(2, "0")} · {demoLabel}
                 </span>
               </span>
             ) : null}
             {demoRunning ? (
-              <TopBarButton onClick={stopDemo} icon={<Square className="size-3.5" />} tone="danger">
-                Stop
-              </TopBarButton>
+              <>
+                <TopBarButton onClick={nextDemoStep} icon={<Play className="size-3.5" />} tone="primary">
+                  {demoStep >= demoTotalSteps ? "Finish" : "Next step"}
+                </TopBarButton>
+                <TopBarButton onClick={stopDemo} icon={<Square className="size-3.5" />} tone="danger">
+                  Stop
+                </TopBarButton>
+              </>
             ) : (
               <TopBarButton onClick={startDemo} icon={<Play className="size-3.5" />} tone="primary">
                 Start demo

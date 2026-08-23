@@ -48,7 +48,7 @@ export function AgentActivity({ compact = false }: { compact?: boolean }) {
                   {agent.status === "COMPLETE" ? (
                     <CheckCircle2 className="size-3.5 shrink-0 text-success" />
                   ) : agent.status === "RUNNING" ? (
-                    <Loader2 className="size-3.5 shrink-0 animate-spin text-warning" />
+                    <Loader2 className="size-3.5 shrink-0 text-warning" />
                   ) : (
                     <Circle className="size-3.5 shrink-0 text-muted-foreground/60" />
                   )}
