@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AlertOctagon, ArrowRight, CheckCircle2, GitBranch, Layers } from "lucide-react";
 
-import { AgentActivity } from "@/components/parallax/AgentActivity";
 import {
   DataRow,
   DemoTag,
@@ -97,7 +96,7 @@ function Disruptions() {
         </Panel>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid gap-4">
         <div className="space-y-4">
           <Panel tone={capabilityIdentified ? "success" : undefined}>
             <PanelHeader
@@ -135,10 +134,7 @@ function Disruptions() {
                   </Link>
                 </div>
               ) : null}
-              <div className="xl:hidden">
-                <AgentActivity compact />
-              </div>
-              <div className="hidden xl:block">
+              <div>
                 <div className="grid gap-2 md:grid-cols-2">
                   {thermoShieldDecomposition.map((n) => (
                     <div key={n.id} className="panel-inset flex items-center gap-3 px-3 py-2">
@@ -189,11 +185,6 @@ function Disruptions() {
           </div>
         </div>
 
-        <Panel className="hidden xl:block">
-          <div className="max-h-[720px] overflow-hidden">
-            <AgentActivity />
-          </div>
-        </Panel>
       </div>
     </div>
   );
