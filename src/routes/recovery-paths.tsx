@@ -86,10 +86,29 @@ function RecoveryPaths() {
                 path={p}
                 recommended={p.id === recommendedPathId}
                 selected={p.id === selectedPathId}
-                onOpen={() => selectPath(p.id === selectedPathId ? null : p.id)}
+                onOpen={() => {
+                  const next = p.id === selectedPathId ? null : p.id;
+                  selectPath(next);
+                  if (next) {
+                    requestAnimationFrame(() =>
+                      document.getElementById("path-detail")?.scrollIntoView({ block: "start", behavior: "smooth" }),
+                    );
+                  }
+                }}
               />
             ))}
           </div>
+
+          {selected ? (
+            <div id="path-detail" className="scroll-mt-20">
+              <RecoveryPathDetail
+                path={selected}
+                onClose={() => selectPath(null)}
+                onApprove={selected.id === recommendedPathId ? approveRecovery : undefined}
+                recoveryStatus={recoveryStatus}
+              />
+            </div>
+          ) : null}
 
           <Panel>
             <PanelHeader
@@ -136,14 +155,6 @@ function RecoveryPaths() {
             </p>
           </Panel>
 
-          {selected ? (
-            <RecoveryPathDetail
-              path={selected}
-              onClose={() => selectPath(null)}
-              onApprove={selected.id === recommendedPathId ? approveRecovery : undefined}
-              recoveryStatus={recoveryStatus}
-            />
-          ) : null}
         </>
       )}
     </div>

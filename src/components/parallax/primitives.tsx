@@ -204,7 +204,10 @@ export function Meter({
 
 export function DemoTag({ children = "Illustrative simulation" }: { children?: ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-sm border border-border-strong bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] tracking-[0.08em] text-muted-foreground uppercase">
+    <span
+      title="Demo label — all figures are modelled from sample data"
+      className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.08em] text-muted-foreground/80 uppercase"
+    >
       {children}
     </span>
   );
