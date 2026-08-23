@@ -107,6 +107,8 @@ interface ParallaxApi extends ParallaxState {
   setPresentation: (on: boolean) => void;
   setAgentPanelOpen: (on: boolean) => void;
   startDemo: () => void;
+  nextDemoStep: () => void;
+  demoTotalSteps: number;
   stopDemo: () => void;
   resetDemo: () => void;
   score: (p: RecoveryPath) => number;
