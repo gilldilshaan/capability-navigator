@@ -208,87 +208,47 @@ export function ParallaxProvider({ children }: { children: ReactNode }) {
     navigate({ to: "/disruptions" });
   }, [navigate, patch]);
 
+  /** One click = one deterministic pass. No timers, no self-advancing state. */
   const runAnalysis = useCallback(() => {
-    setState((s) =>
-      s.analysis === "running"
-        ? s
-        : {
-            ...s,
-            incidentOpen: true,
-            analysis: "running",
-            analysisProgress: 0,
-            capabilityIdentified: false,
-            resourcesDiscovered: false,
-            pathsGenerated: false,
-            recommendedPathId: null,
-            recoveryStatus: "NOT STARTED",
-            agents: agentDefs.map((a, i) => ({
-              id: a.id,
-              code: a.code,
-              name: a.name,
-              status: i === 0 ? "COMPLETE" : "QUEUED",
-              message: i === 0 ? a.doneMessage : a.queuedMessage,
-            })),
-          },
-    );
-
-    let t = 0;
-    agentDefs.forEach((def, i) => {
-      if (i === 0) return;
-      const start = t;
-      t += def.durationMs;
-      const end = t;
-
-      later(start, () => {
-        setState((s) => ({
-          ...s,
-          analysisProgress: Math.round((i / agentDefs.length) * 100),
-          agents: s.agents.map((a) =>
-            a.id === def.id ? { ...a, status: "RUNNING", message: def.runningMessage } : a,
-          ),
-        }));
-        log(20 + Math.round(start / 100), def.code, def.runningMessage);
+    setState((s) => {
+      const activity = [...s.activity];
+      let offset = 20;
+      agentDefs.forEach((def) => {
+        offset += 6;
+        activity.push({ id: nextId(), time: clock(offset), channel: def.code, text: def.doneMessage });
       });
 
-      later(end, () => {
-        setState((s) => ({
-          ...s,
-          agents: s.agents.map((a) =>
-            a.id === def.id ? { ...a, status: "COMPLETE", message: def.doneMessage } : a,
-          ),
-        }));
-        log(20 + Math.round(end / 100), def.code, def.doneMessage);
-
-        if (def.code === "CAPABILITY") {
-          patch({ capabilityIdentified: true });
-          audit("08:43", "Capability identified", "CAP-THS-017 · ThermoShield Packaging · 7 sub-capabilities", "info");
-        }
-        if (def.code === "RESOURCE") {
-          patch({ resourcesDiscovered: true });
-          audit("08:44", "Resources discovered", "31 of 48 enterprise resources usable", "info");
-        }
-        if (def.code === "RECONSTRUCTION") {
-          patch({ pathsGenerated: true });
-          audit("08:45", "3 recovery paths generated", "Path A · Path B · Path C", "info");
-        }
-        if (def.code === "SCENARIO") {
-          audit("08:46", "Scenario simulation completed", "Weighted scoring across 5 factors", "info");
-        }
-        if (def.code === "COMPLIANCE") {
-          patch({
-            analysis: "complete",
-            analysisProgress: 100,
-            recommendedPathId: "C",
-            recoveryStatus: "AWAITING APPROVAL",
-            readiness: 92,
-          });
-          audit("08:47", "Path C recommended", "Recovery score 94/100 · dependency risk LOW", "success");
-          audit("08:48", "Awaiting human approval", "Routed to Aditi Sharma · Resilience Manager", "warning");
-          log(60, "HUMAN", "Awaiting manager approval.");
-        }
-      });
+      return {
+        ...s,
+        incidentOpen: true,
+        analysis: "complete",
+        analysisProgress: 100,
+        capabilityIdentified: true,
+        resourcesDiscovered: true,
+        pathsGenerated: true,
+        recommendedPathId: "C",
+        recoveryStatus: "AWAITING APPROVAL",
+        readiness: 92,
+        agents: agentDefs.map((a) => ({
+          id: a.id,
+          code: a.code,
+          name: a.name,
+          status: "COMPLETE" as AgentStatus,
+          message: a.doneMessage,
+        })),
+        activity: [...activity, { id: nextId(), time: clock(offset + 8), channel: "HUMAN", text: "Awaiting manager approval." }],
+        audit: [
+          ...s.audit,
+          { id: nextId(), time: "08:43", label: "Capability identified", detail: "CAP-THS-017 · ThermoShield Packaging · 7 sub-capabilities", tone: "info" as const },
+          { id: nextId(), time: "08:44", label: "Resources discovered", detail: "31 of 48 enterprise resources usable", tone: "info" as const },
+          { id: nextId(), time: "08:45", label: "3 recovery paths generated", detail: "Path A · Path B · Path C", tone: "info" as const },
+          { id: nextId(), time: "08:46", label: "Scenario simulation completed", detail: "Weighted scoring across 5 factors", tone: "info" as const },
+          { id: nextId(), time: "08:47", label: "Path C recommended", detail: "Recovery score 94/100 · dependency risk LOW", tone: "success" as const },
+          { id: nextId(), time: "08:48", label: "Awaiting human approval", detail: "Routed to Aditi Sharma · Resilience Manager", tone: "warning" as const },
+        ],
+      };
     });
-  }, [audit, later, log, patch]);
+  }, []);
 
   const selectPath = useCallback((id: RecoveryPath["id"] | null) => patch({ selectedPathId: id }), [patch]);
 
