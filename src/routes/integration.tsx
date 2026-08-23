@@ -20,7 +20,7 @@ export const Route = createFileRoute("/integration")({
       },
     ],
   }),
-  component: Integration;
+  component: Integration,
 });
 
 function Integration() {
