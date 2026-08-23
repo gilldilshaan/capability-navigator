@@ -15,6 +15,7 @@ import { Route as CapabilityMapRouteImport } from './routes/capability-map'
 import { Route as DisruptionsRouteImport } from './routes/disruptions'
 import { Route as RecoveryPathsRouteImport } from './routes/recovery-paths'
 import { Route as ResourcesRouteImport } from './routes/resources'
+import { Route as WorkforceRouteImport } from './routes/workforce'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,6 +47,11 @@ const ResourcesRoute = ResourcesRouteImport.update({
   path: '/resources',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkforceRoute = WorkforceRouteImport.update({
+  id: '/workforce',
+  path: '/workforce',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/disruptions': typeof DisruptionsRoute
   '/recovery-paths': typeof RecoveryPathsRoute
   '/resources': typeof ResourcesRoute
+  '/workforce': typeof WorkforceRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/disruptions': typeof DisruptionsRoute
   '/recovery-paths': typeof RecoveryPathsRoute
   '/resources': typeof ResourcesRoute
+  '/workforce': typeof WorkforceRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,6 +79,7 @@ export interface FileRoutesById {
   '/disruptions': typeof DisruptionsRoute
   '/recovery-paths': typeof RecoveryPathsRoute
   '/resources': typeof ResourcesRoute
+  '/workforce': typeof WorkforceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,6 +90,7 @@ export interface FileRouteTypes {
     | '/disruptions'
     | '/recovery-paths'
     | '/resources'
+    | '/workforce'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -89,6 +99,7 @@ export interface FileRouteTypes {
     | '/disruptions'
     | '/recovery-paths'
     | '/resources'
+    | '/workforce'
   id:
     | '__root__'
     | '/'
@@ -97,6 +108,7 @@ export interface FileRouteTypes {
     | '/disruptions'
     | '/recovery-paths'
     | '/resources'
+    | '/workforce'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -106,6 +118,7 @@ export interface RootRouteChildren {
   DisruptionsRoute: typeof DisruptionsRoute
   RecoveryPathsRoute: typeof RecoveryPathsRoute
   ResourcesRoute: typeof ResourcesRoute
+  WorkforceRoute: typeof WorkforceRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -152,6 +165,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResourcesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/workforce': {
+      id: '/workforce'
+      path: '/workforce'
+      fullPath: '/workforce'
+      preLoaderRoute: typeof WorkforceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -162,6 +182,7 @@ const rootRouteChildren: RootRouteChildren = {
   DisruptionsRoute: DisruptionsRoute,
   RecoveryPathsRoute: RecoveryPathsRoute,
   ResourcesRoute: ResourcesRoute,
+  WorkforceRoute: WorkforceRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
