@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BreakMySupplyChainRouteImport } from './routes/break-my-supply-chain'
 import { Route as CapabilityMapRouteImport } from './routes/capability-map'
 import { Route as DisruptionsRouteImport } from './routes/disruptions'
 import { Route as RecoveryPathsRouteImport } from './routes/recovery-paths'
@@ -18,6 +19,11 @@ import { Route as ResourcesRouteImport } from './routes/resources'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BreakMySupplyChainRoute = BreakMySupplyChainRouteImport.update({
+  id: '/break-my-supply-chain',
+  path: '/break-my-supply-chain',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CapabilityMapRoute = CapabilityMapRouteImport.update({
@@ -43,6 +49,7 @@ const ResourcesRoute = ResourcesRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/break-my-supply-chain': typeof BreakMySupplyChainRoute
   '/capability-map': typeof CapabilityMapRoute
   '/disruptions': typeof DisruptionsRoute
   '/recovery-paths': typeof RecoveryPathsRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/break-my-supply-chain': typeof BreakMySupplyChainRoute
   '/capability-map': typeof CapabilityMapRoute
   '/disruptions': typeof DisruptionsRoute
   '/recovery-paths': typeof RecoveryPathsRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/break-my-supply-chain': typeof BreakMySupplyChainRoute
   '/capability-map': typeof CapabilityMapRoute
   '/disruptions': typeof DisruptionsRoute
   '/recovery-paths': typeof RecoveryPathsRoute
@@ -66,13 +75,24 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/capability-map' | '/disruptions' | '/recovery-paths' | '/resources'
+    | '/'
+    | '/break-my-supply-chain'
+    | '/capability-map'
+    | '/disruptions'
+    | '/recovery-paths'
+    | '/resources'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/capability-map' | '/disruptions' | '/recovery-paths' | '/resources'
+    | '/'
+    | '/break-my-supply-chain'
+    | '/capability-map'
+    | '/disruptions'
+    | '/recovery-paths'
+    | '/resources'
   id:
     | '__root__'
     | '/'
+    | '/break-my-supply-chain'
     | '/capability-map'
     | '/disruptions'
     | '/recovery-paths'
@@ -81,6 +101,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BreakMySupplyChainRoute: typeof BreakMySupplyChainRoute
   CapabilityMapRoute: typeof CapabilityMapRoute
   DisruptionsRoute: typeof DisruptionsRoute
   RecoveryPathsRoute: typeof RecoveryPathsRoute
@@ -94,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/break-my-supply-chain': {
+      id: '/break-my-supply-chain'
+      path: '/break-my-supply-chain'
+      fullPath: '/break-my-supply-chain'
+      preLoaderRoute: typeof BreakMySupplyChainRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/capability-map': {
@@ -129,6 +157,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BreakMySupplyChainRoute: BreakMySupplyChainRoute,
   CapabilityMapRoute: CapabilityMapRoute,
   DisruptionsRoute: DisruptionsRoute,
   RecoveryPathsRoute: RecoveryPathsRoute,
