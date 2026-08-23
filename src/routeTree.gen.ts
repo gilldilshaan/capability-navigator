@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CapabilityMapRouteImport } from './routes/capability-map'
 import { Route as DisruptionsRouteImport } from './routes/disruptions'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CapabilityMapRoute = CapabilityMapRouteImport.update({
+  id: '/capability-map',
+  path: '/capability-map',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DisruptionsRoute = DisruptionsRouteImport.update({
@@ -25,27 +31,31 @@ const DisruptionsRoute = DisruptionsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/capability-map': typeof CapabilityMapRoute
   '/disruptions': typeof DisruptionsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/capability-map': typeof CapabilityMapRoute
   '/disruptions': typeof DisruptionsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/capability-map': typeof CapabilityMapRoute
   '/disruptions': typeof DisruptionsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/disruptions'
+  fullPaths: '/' | '/capability-map' | '/disruptions'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/disruptions'
-  id: '__root__' | '/' | '/disruptions'
+  to: '/' | '/capability-map' | '/disruptions'
+  id: '__root__' | '/' | '/capability-map' | '/disruptions'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CapabilityMapRoute: typeof CapabilityMapRoute
   DisruptionsRoute: typeof DisruptionsRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/capability-map': {
+      id: '/capability-map'
+      path: '/capability-map'
+      fullPath: '/capability-map'
+      preLoaderRoute: typeof CapabilityMapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/disruptions': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CapabilityMapRoute: CapabilityMapRoute,
   DisruptionsRoute: DisruptionsRoute,
 }
 export const routeTree = rootRouteImport
