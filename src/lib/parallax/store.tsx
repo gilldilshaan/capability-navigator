@@ -401,6 +401,8 @@ export function ParallaxProvider({ children }: { children: ReactNode }) {
       setPresentation,
       setAgentPanelOpen,
       startDemo,
+      nextDemoStep,
+      demoTotalSteps: demoSteps.length,
       stopDemo,
       resetDemo,
       score: scorePath,
