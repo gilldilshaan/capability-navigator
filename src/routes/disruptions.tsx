@@ -135,10 +135,7 @@ function Disruptions() {
                   </Link>
                 </div>
               ) : null}
-              <div className="xl:hidden">
-                <AgentActivity compact />
-              </div>
-              <div className="hidden xl:block">
+              <div>
                 <div className="grid gap-2 md:grid-cols-2">
                   {thermoShieldDecomposition.map((n) => (
                     <div key={n.id} className="panel-inset flex items-center gap-3 px-3 py-2">
@@ -154,6 +151,7 @@ function Disruptions() {
               </div>
             </div>
           </Panel>
+
 
           <div className="grid gap-4 md:grid-cols-2">
             <Panel className="flex flex-col p-4">
