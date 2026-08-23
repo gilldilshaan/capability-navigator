@@ -155,14 +155,6 @@ function RecoveryPaths() {
             </p>
           </Panel>
 
-          {selected ? (
-            <RecoveryPathDetail
-              path={selected}
-              onClose={() => selectPath(null)}
-              onApprove={selected.id === recommendedPathId ? approveRecovery : undefined}
-              recoveryStatus={recoveryStatus}
-            />
-          ) : null}
         </>
       )}
     </div>
