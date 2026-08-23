@@ -422,6 +422,8 @@ export function ParallaxProvider({ children }: { children: ReactNode }) {
       setPresentation,
       setAgentPanelOpen,
       startDemo,
+      nextDemoStep,
+      demoSteps,
       stopDemo,
       resetDemo,
     ],
