@@ -179,19 +179,8 @@ function clock(offsetSec: number) {
 
 export function ParallaxProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<ParallaxState>(initialState);
-  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const navigate = useNavigate();
 
-  const clearTimers = useCallback(() => {
-    timers.current.forEach(clearTimeout);
-    timers.current = [];
-  }, []);
-
-  useEffect(() => clearTimers, [clearTimers]);
-
-  const later = useCallback((ms: number, fn: () => void) => {
-    timers.current.push(setTimeout(fn, ms));
-  }, []);
 
   const patch = useCallback((p: Partial<ParallaxState>) => {
     setState((s) => ({ ...s, ...p }));
