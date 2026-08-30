@@ -49,9 +49,9 @@ function unavailableNarrative(): RecommendationNarrative {
 }
 
 function getConfiguration() {
-  const enabled = process.env["PARALLAX_LLM_ENABLED"] === "true";
-  const apiKey = process.env["OPENAI_API_KEY"];
-  const model = process.env["PARALLAX_LLM_MODEL"] ?? "gpt-4.1-mini";
+  const enabled = process.env["PARALLAX_LLM_ENABLED"] !== "false";
+  const apiKey = process.env["GROQ_API_KEY"];
+  const model = process.env["PARALLAX_LLM_MODEL"] ?? "llama-3.3-70b-versatile";
   const timeoutMs = Number(process.env["PARALLAX_LLM_TIMEOUT_MS"] ?? 8000);
   return {
     enabled,
@@ -66,7 +66,7 @@ function instructions() {
     "You explain PARALLAX deterministic workflow results for a human approver.",
     "Use only facts in the supplied JSON snapshot.",
     "Do not create or change recovery paths, recommendations, resources, scores, compliance findings, times, costs, or any other facts.",
-    "Return only the requested JSON schema.",
+    "Return valid JSON matching this schema structure: {\"pathId\":\"A\"|\"B\"|\"C\",\"recommendation\":\"string\",\"rationale\":[\"string\"],\"tradeoffs\":[{\"pathId\":\"A\"|\"B\"|\"C\",\"summary\":\"string\"}],\"humanApprovalNote\":\"string\"}.",
   ].join(" ");
 }
 
@@ -89,35 +89,28 @@ export async function generateRecommendationNarrative(
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), config.timeoutMs);
   try {
-    const response = await fetch("https://api.openai.com/v1/responses", {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
-      headers: { Authorization: `Bearer ${config.apiKey}`, "Content-Type": "application/json" },
+      headers: {
+        Authorization: `Bearer ${config.apiKey}`,
+        "Content-Type": "application/json",
+      },
       signal: controller.signal,
       body: JSON.stringify({
         model: config.model,
-        store: false,
-        instructions: instructions(),
-        input: JSON.stringify(snapshot),
-        text: {
-          format: {
-            type: "json_schema",
-            name: "parallax_recommendation",
-            strict: true,
-            schema: outputJsonSchema,
-          },
-        },
+        messages: [
+          { role: "system", content: instructions() },
+          { role: "user", content: JSON.stringify(snapshot) },
+        ],
+        response_format: { type: "json_object" },
       }),
     });
-    if (!response.ok) throw new Error(`OpenAI request failed with status ${response.status}.`);
-    const body: unknown = await response.json();
-    const outputText =
-      body &&
-      typeof body === "object" &&
-      "output_text" in body &&
-      typeof body.output_text === "string"
-        ? body.output_text
-        : null;
-    if (!outputText) throw new Error("OpenAI response did not contain structured output text.");
+    if (!response.ok) throw new Error(`Groq request failed with status ${response.status}.`);
+    const body = (await response.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    const outputText = body?.choices?.[0]?.message?.content ?? null;
+    if (!outputText) throw new Error("Groq response did not contain structured output text.");
     const parsed = llmOutputSchema.parse(JSON.parse(outputText));
     if (parsed.pathId !== snapshot.deterministicRecommendedPathId) {
       return {
