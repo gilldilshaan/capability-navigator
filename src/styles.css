@@ -1,0 +1,232 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * PARALLAX design system — light enterprise console (calm, low-noise).
+ * All colors are oklch semantic tokens. Never hardcode colors in components.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-critical: var(--critical);
+  --color-warning: var(--warning);
+  --color-success: var(--success);
+  --color-info: var(--info);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.5rem;
+
+  /* Single warm paper/cream palette — no light/dark split anywhere. */
+  --background: oklch(0.962 0.012 88);
+  --foreground: oklch(0.29 0.024 175);
+  --surface: oklch(0.983 0.008 90);
+  --surface-2: oklch(0.945 0.014 88);
+
+  --card: oklch(0.983 0.008 90);
+  --card-foreground: oklch(0.29 0.024 175);
+  --popover: oklch(0.983 0.008 90);
+  --popover-foreground: oklch(0.29 0.024 175);
+
+  --primary: oklch(0.44 0.062 178);
+  --primary-foreground: oklch(0.975 0.01 90);
+  --secondary: oklch(0.94 0.014 88);
+  --secondary-foreground: oklch(0.33 0.024 175);
+  --muted: oklch(0.938 0.013 88);
+  --muted-foreground: oklch(0.52 0.017 175);
+  --accent: oklch(0.925 0.019 86);
+  --accent-foreground: oklch(0.3 0.024 175);
+
+  --destructive: oklch(0.55 0.125 34);
+  --destructive-foreground: oklch(0.975 0.01 90);
+  --critical: oklch(0.55 0.125 34);
+  --warning: oklch(0.62 0.098 72);
+  --success: oklch(0.5 0.075 155);
+  --info: oklch(0.44 0.062 208);
+
+  --border: oklch(0.885 0.014 86);
+  --border-strong: oklch(0.82 0.019 84);
+  --input: oklch(0.87 0.016 86);
+  --ring: oklch(0.6 0.05 178);
+
+  --chart-1: oklch(0.44 0.062 208);
+  --chart-2: oklch(0.5 0.075 155);
+  --chart-3: oklch(0.62 0.098 72);
+  --chart-4: oklch(0.55 0.125 34);
+  --chart-5: oklch(0.48 0.06 300);
+
+  /* Sidebar uses the same paper palette as the content — intentionally not dark. */
+  --sidebar: oklch(0.945 0.014 88);
+  --sidebar-foreground: oklch(0.3 0.024 175);
+  --sidebar-primary: oklch(0.44 0.062 178);
+  --sidebar-primary-foreground: oklch(0.975 0.01 90);
+  --sidebar-accent: oklch(0.9 0.021 86);
+  --sidebar-accent-foreground: oklch(0.27 0.024 175);
+  --sidebar-border: oklch(0.885 0.014 86);
+  --sidebar-ring: oklch(0.6 0.05 178);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html,
+  html.dark,
+  body {
+    color-scheme: light only;
+    background-color: var(--color-background);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html,
+    body {
+      color-scheme: light only;
+      background-color: var(--color-background);
+      color: var(--color-foreground);
+    }
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-primary) 35%, transparent);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-background);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border-radius: 6px;
+    border: 3px solid var(--color-background);
+  }
+}
+
+/* ---- Utilities ---- */
+
+@utility panel {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px color-mix(in oklab, var(--color-foreground) 5%, transparent);
+}
+
+@utility panel-inset {
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+@utility grid-backdrop {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--color-border) 70%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--color-border) 70%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+@utility label-xs {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
+@utility num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+@utility glow-critical {
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-critical) 40%, transparent),
+    0 6px 16px -10px color-mix(in oklab, var(--color-critical) 45%, transparent);
+}
+
+@utility glow-info {
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-info) 40%, transparent),
+    0 6px 16px -10px color-mix(in oklab, var(--color-info) 45%, transparent);
+}
+
+@utility glow-success {
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-success) 40%, transparent),
+    0 6px 16px -10px color-mix(in oklab, var(--color-success) 45%, transparent);
+}
+
+/* ---- Motion ----
+ * No ambient/looping motion by design: the interface only changes on click.
+ * These utilities stay as static styling hooks so markup does not break. */
+
+@utility edge-flow {
+  stroke-dasharray: 5 7;
+}
+
+@utility pulse-ring {
+  opacity: 0;
+}
+
+@utility rise-in {
+  opacity: 1;
+}
+
+@utility sweep {
+  opacity: 0;
+}
