@@ -1,1818 +1,739 @@
-# Capability Navigator
 
-You are a senior product designer, frontend engineer, AI product architect, and hackathon demo specialist.
+<div align="center">
 
-Build a HIGH-FIDELITY, FULLY INTERACTIVE DEMO of a product called:
+# PARALLAX
 
-PARALLAX
+### Same outcome. Different path.
 
-"Same outcome. Different path."
+**AI-powered capability reconstruction for resilient supply chains.**
 
-PARALLAX is an Agentic AI platform for resilient supply chains.
+<br />
 
-IMPORTANT:
+[![Hackfest 2026](https://img.shields.io/badge/Hackfest-2026-0A6ED1?style=for-the-badge)](#)
+[![SAP](https://img.shields.io/badge/SAP-Innovation-0FAAFF?style=for-the-badge&logo=sap&logoColor=white)](#)
+[![Status](https://img.shields.io/badge/Status-In%20Development-F59E0B?style=for-the-badge)](#)
+[![License](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge)](#)
 
-This is NOT a generic supply-chain dashboard.
+<br />
 
-This is NOT a supplier tracking app.
+> **When a dependency fails, don't just replace it. Reconstruct the capability it provided.**
 
-This is NOT an inventory management system.
+<br />
 
-This is NOT a normal AI chatbot.
+[🚀 Explore Concept](#-the-idea)
+&nbsp;&nbsp;
+[⚡ How It Works](#-how-parallax-works)
+&nbsp;&nbsp;
+[🧠 Architecture](#-system-architecture)
+&nbsp;&nbsp;
+[🔥 Chaos Simulation](#-break-my-supply-chain)
+&nbsp;&nbsp;
+[👥 Team](#-team)
 
-The core innovation is:
+</div>
 
-"When a critical dependency fails, PARALLAX does not simply search for a replacement. It identifies the capability that was lost and discovers alternative combinations of resources that can reconstruct that capability."
+---
 
-The application should feel like a serious enterprise AI product that could be presented at an SAP/Hackfest competition.
+# 🌍 The Problem
 
-The demo does not need a real production backend, real SAP credentials, or real external APIs. Use realistic mock data and deterministic simulation logic, but make the interactions feel real and coherent.
+Modern supply chains are built around **resources**:
 
-==================================================
-
-1. PRODUCT POSITIONING
-
-==================================================
-
-Product name:
-
-PARALLAX
-
-Tagline:
-
-Same outcome. Different path.
-
-Product description:
-
-AI-powered capability reconstruction for resilient supply chains.
-
-Primary user:
-
-Supply Chain Resilience Manager / Operations Manager.
-
-Primary use case:
-
-A pharmaceutical supply chain suffers a critical supplier disruption.
-
-The user needs to answer:
-
-1. What exactly was lost?
-
-2. What capability does that dependency provide?
-
-3. What resources do we already have?
-
-4. Can we reconstruct the lost capability?
-
-5. What are the possible recovery paths?
-
-6. Which recovery path is fastest, safest, and most feasible?
-
-7. What hidden dependencies would cause another failure?
-
-==================================================
-
-2. CORE DEMO STORY
-
-==================================================
-
-The entire application should tell this story:
-
-A critical pharmaceutical supplier suddenly becomes unavailable.
-
-Traditional response:
-
-Supplier A fails
-
-→ search for Supplier B
-
-→ procurement
-
-→ wait
-
-→ production risk.
-
-PARALLAX:
-
-Supplier A fails
-
-→ identify lost capability
-
-→ decompose the capability
-
-→ discover available resources
-
-→ generate alternative configurations
-
-→ simulate each configuration
-
-→ evaluate cost/time/risk/compliance
-
-→ recommend the best recovery path
-
-→ human approval
-
-→ recovery plan.
-
-The demo should make this workflow visually obvious.
-
-==================================================
-
-3. MAIN APPLICATION STRUCTURE
-
-==================================================
-
-Create a polished enterprise dashboard with the following main navigation:
-
-- Overview
-
-- Disruptions
-
-- Capability Map
-
-- Recovery Paths
-
-- Break My Supply Chain
-
+- Suppliers
+- Factories
+- Machines
+- Routes
+- Inventory
 - Workforce
 
-- Audit & Decisions
+When one fails, the traditional response is usually:
 
-Top navigation should contain:
+```text
+Supplier fails
+      ↓
+Find another supplier
+      ↓
+Wait for replacement
+      ↓
+Production risk
+````
 
-PARALLAX logo/wordmark
+But this approach misses a fundamental question:
 
-Status:
+> **What capability did we actually lose?**
 
-"Network Status: Operational"
+Five suppliers may appear independent...
 
-User:
+...while all five depend on the same hidden certification, machine, logistics route, or workforce capability.
 
-"Aditi Sharma"
+### Supplier redundancy ≠ Capability redundancy.
 
-"Supply Chain Resilience Manager"
+---
 
-Use a professional enterprise design system.
+# 💡 The Idea
 
-Do NOT make it look like a generic SaaS template.
+PARALLAX takes a fundamentally different approach.
 
-Do NOT use excessive gradients.
+Instead of asking:
 
-Do NOT use cartoonish illustrations.
+> ❌ "Who can replace this supplier?"
 
-Do NOT use generic AI robot graphics.
+PARALLAX asks:
 
-Do NOT use huge rounded cards everywhere.
+> ✅ "What capability was lost, and how can we reconstruct it using different combinations of available resources?"
 
-Design should feel:
+```mermaid
+flowchart LR
 
-- sophisticated
+A[⚠️ Disruption] --> B[Identify Failed Resource]
 
-- technical
+B --> C[Analyze Lost Capability]
 
-- trustworthy
+C --> D[Decompose Dependencies]
 
-- enterprise
+D --> E[Discover Available Resources]
 
-- data-rich
+E --> F[Generate Recovery Paths]
 
-- premium
+F --> G[Simulate Outcomes]
 
-- restrained
+G --> H[Evaluate Risk, Cost & Time]
 
-- competition-ready
+H --> I[Human Approval]
 
-==================================================
+I --> J[✓ Recovery Plan]
+```
 
-4. VISUAL DESIGN
+---
 
-==================================================
+# ⚡ How PARALLAX Works
 
-Use a dark enterprise interface.
-
-Primary background:
-
-near-black / deep navy.
-
-Use restrained colors for semantic meaning:
-
-RED:
-
-critical disruption / failure
-
-AMBER:
-
-warning / uncertainty
-
-GREEN:
-
-healthy / recovered / approved
-
-BLUE:
-
-system intelligence / information
-
-WHITE:
-
-primary text
-
-Muted gray:
-
-secondary text
-
-Use subtle borders and glass-like surfaces only where appropriate.
-
-Typography:
-
-Use Inter or a similar highly readable modern enterprise font.
-
-Use monospaced typography for:
-
-- system IDs
-
-- timestamps
-
-- technical metrics
-
-- event IDs
-
-- capability IDs
-
-Use Lucide icons or another professional icon library.
-
-Avoid emoji inside the application.
-
-Use subtle motion:
-
-- status transitions
-
-- graph node highlighting
-
-- agent activity
-
-- simulation progress
-
-- recommendation appearing
-
-- disruption propagation
-
-Animations should be fast and professional.
-
-==================================================
-
-5. LANDING / OVERVIEW SCREEN
-
-==================================================
-
-Create an Overview page.
-
-Top heading:
-
-"Supply Chain Resilience Command Center"
-
-Subheading:
-
-"Understand what failed. Reconstruct what matters."
-
-At the top show four KPI cards:
-
-NETWORK RESILIENCE
-
-87 / 100
-
-ACTIVE DISRUPTIONS
-
-01
-
-CAPABILITY REDUNDANCY
-
-3.8x
-
-RECOVERY READINESS
-
-92%
-
-Use believable supporting text.
+## 1️⃣ A disruption occurs
 
 Example:
 
-Network Resilience
+> **MedCore Components Ltd. goes offline.**
 
-+6.4% this month
+```text
+RESOURCE FAILURE
+────────────────────
 
-Active Disruptions
+Supplier: MedCore Components
+Status: OFFLINE
+Impact Window: 72 Hours
+Severity: CRITICAL
+```
 
-1 critical
+↓
 
-Capability Redundancy
+## 2️⃣ PARALLAX identifies what was actually lost
 
-2 capabilities exposed
+Instead of stopping at:
 
-Recovery Readiness
+> Supplier unavailable ❌
 
-+8.2% after latest simulation
+PARALLAX analyzes:
 
-Below this show:
-
-"ACTIVE INCIDENT"
-
-Critical Supplier Disruption
-
-Supplier:
-
-MedCore Components Ltd.
-
-Dependency:
-
-Cold-chain packaging component
-
-Status:
-
-CRITICAL
-
-Impact:
-
-Production risk in 72 hours
-
-Button:
-
-"Open Incident"
-
-Clicking it should open the main disruption workflow.
-
-==================================================
-
-6. DISRUPTION WORKFLOW
-
-==================================================
-
-This is the most important part of the demo.
-
-When the user clicks "Open Incident", take them to a dedicated disruption command center.
-
-Header:
-
-"Critical Disruption"
-
-Status:
-
-CRITICAL
-
-Incident:
-
-INC-2048
-
-Detected:
-
-08:42 IST
-
-Expected impact:
-
-72 hours
-
-Supplier:
-
-MedCore Components Ltd.
-
-Component:
-
-ThermoShield Packaging Module
-
-==================================================
-
-7. STEP 1 — SENSING AGENT
-
-==================================================
-
-Create an Agent Activity panel.
-
-Title:
-
-"Agentic Response"
-
-Show agents activating sequentially.
-
-Agent 01:
-
-SENSING AGENT
-
-Status:
-
-COMPLETE
-
-Message:
-
-"Supplier availability event detected."
-
-Agent 02:
-
-CAPABILITY ANALYSIS AGENT
-
-Status:
-
-RUNNING
-
-Message:
-
-"Determining downstream capabilities affected..."
-
-Agent 03:
-
-RESOURCE DISCOVERY AGENT
-
-Status:
-
-QUEUED
-
-Agent 04:
-
-RECONSTRUCTION AGENT
-
-Status:
-
-QUEUED
-
-Agent 05:
-
-SCENARIO AGENT
-
-Status:
-
-QUEUED
-
-The user should be able to click:
-
-"Run Analysis"
-
-When clicked, animate the agents progressing.
-
-Do NOT actually wait too long.
-
-Simulation should complete in approximately 3–6 seconds.
-
-After completion:
-
-Show:
-
-"Capability identified"
-
-ThermoShield Packaging Capability
-
-Capability ID:
-
-CAP-THS-017
-
-==================================================
-
-8. CAPABILITY ANALYSIS
-
-==================================================
-
-Create a visual capability decomposition.
-
-Title:
-
-"What did we actually lose?"
-
-Show a central node:
-
+```text
 THERMOSHIELD PACKAGING CAPABILITY
+│
+├── Temperature Resistant Material
+├── Precision Forming
+├── Quality Certification
+├── Cold-Chain Handling
+├── Skilled Workforce
+└── Regional Logistics
+```
 
-Connected nodes:
+### Key insight:
 
-Material
+> **The supplier failed. The capability may not have.**
 
-Temperature Resistance
+↓
 
-Precision Forming
+## 3️⃣ The system discovers available resources
 
-Quality Certification
+PARALLAX searches across the network:
 
-Cold-Chain Handling
+```text
+AVAILABLE RESOURCES
+──────────────────────────
 
-Packaging Workforce
+✓ Alternative Supplier
+✓ Idle Machine
+✓ Available Factory Capacity
+✓ Existing Inventory
+✓ Transferable Workforce
+✓ Alternative Logistics Route
+```
 
-Regional Logistics
+↓
 
-Each node should have:
+## 4️⃣ Multiple recovery paths are generated
 
-- status
+### PATH A — Direct Replacement
 
-- dependency count
+```text
+MedCore ❌
+   ↓
+BioPack Systems ✓
 
-- availability
+Recovery: 14 Days
+Risk: Medium
+Cost: ₹18.4L
+```
 
-For example:
+### PATH B — Alternate Manufacturing
 
-Material
-
-AVAILABLE
-
-Precision Forming
-
-AVAILABLE
-
-Quality Certification
-
-AVAILABLE
-
-Packaging Workforce
-
-PARTIAL
-
-Cold-Chain Handling
-
-AVAILABLE
-
-Regional Logistics
-
-AT RISK
-
-The key insight should be visually clear:
-
-"The supplier failed.
-
-The capability did not necessarily fail."
-
-Add a small explanation:
-
-"PARALLAX decomposes supplier dependencies into the underlying capabilities required to achieve the outcome."
-
-==================================================
-
-9. RESOURCE DISCOVERY
-
-==================================================
-
-Create a Resource Discovery view.
-
-Title:
-
-"Available Resources"
-
-Show categorized resources.
-
-SUPPLIERS
-
-MedCore Components
-
-OFFLINE
-
-BioPack Systems
-
-AVAILABLE
-
+```text
 NorthStar Materials
-
-AVAILABLE
-
-FACTORIES
-
-Plant 02
-
-72% available capacity
-
+        +
 Plant 04
+        +
+Existing Inventory
 
-41% available capacity
+Recovery: 7 Days
+Risk: Medium-Low
+Cost: ₹9.2L
+```
 
-MACHINES
+### PATH C — Capability Reconstruction ⭐
 
-CNC-17
-
-IDLE
-
-FORM-08
-
-AVAILABLE
-
-INVENTORY
-
-ThermoShield Resin
-
-1,840 units
-
-Packaging Film
-
-5,200 units
-
-WORKFORCE
-
-12 employees with transferable skills
-
-LOGISTICS
-
-Route DEL → CHD
-
-AVAILABLE
-
-Route BOM → CHD
-
-AT RISK
-
-Make these resources clickable.
-
-Clicking a resource should open a detail drawer showing:
-
-- resource ID
-
-- current state
-
-- capability contribution
-
-- location
-
-- capacity
-
-- dependencies
-
-- constraints
-
-==================================================
-
-10. CAPABILITY RECONSTRUCTION
-
-==================================================
-
-Now create the most important screen:
-
-"Reconstruct Capability"
-
-Show the system generating multiple possible configurations.
-
-PATH A
-
-Direct Supplier Replacement
-
-Supplier:
-
-BioPack Systems
-
-Recovery:
-
-14 days
-
-Cost:
-
-₹18.4L
-
-Risk:
-
-Medium
-
-PATH B
-
-Alternate Manufacturing
-
-Plant 04
-
-+
-
+```text
+Existing Inventory
+        +
 NorthStar Materials
-
-+
-
-Existing inventory
-
-Recovery:
-
-7 days
-
-Cost:
-
-₹9.2L
-
-Risk:
-
-Medium-Low
-
-PATH C
-
-Capability Reconstruction
-
-Existing inventory
-
-+
-
-CNC-17
-
-+
-
+        +
 Plant 02
-
-+
-
-NorthStar Materials
-
-+
-
-Transferable workforce
-
-+
-
-Alternative logistics route
-
-Recovery:
-
-3.2 days
-
-Cost:
-
-₹3.4L
-
-Risk:
-
-LOW
-
-PATH C should be visually recommended.
-
-Label:
-
-"PARALLAX RECOMMENDATION"
-
-Reason:
-
-"Highest recovery speed with lowest dependency concentration."
-
-Do NOT claim these are real-world measured savings.
-
-Clearly label them:
-
-"Illustrative simulation"
-
-==================================================
-
-11. PATH EXPLANATION
-
-==================================================
-
-When the user clicks PATH C:
-
-Open a detailed recovery plan.
-
-Title:
-
-"Capability Reconstruction Path"
-
-Show a graph:
-
-Inventory
-
-    ↓
-
-NorthStar Materials
-
-    ↓
-
-Plant 02
-
-    ↓
-
+        +
 CNC-17
-
-    ↓
-
+        +
 Transferable Workforce
-
-    ↓
-
+        +
 Alternative Logistics
+        ↓
 
-    ↓
+THERMOSHIELD CAPABILITY RESTORED
+```
 
-ThermoShield Packaging
+```text
+Recovery Time     3.2 Days
+Estimated Cost    ₹3.4L
+Capacity Coverage 91%
+Dependency Risk   LOW
 
-    ↓
+Recovery Score    94 / 100
+```
 
-Pharma Production
+> 🏆 **PARALLAX Recommendation**
 
-Each connection should be animated.
+---
 
-Show a side panel:
+# 🧠 Agentic Intelligence
 
-RECOVERY SCORE
+PARALLAX uses a collaborative multi-agent workflow.
 
-94 / 100
+```mermaid
+flowchart TD
 
-TIME TO RECOVERY
+A[🚨 Disruption Event]
 
-3.2 days
+A --> B[01<br/>Sensing Agent]
 
-ESTIMATED COST
+B --> C[02<br/>Capability Analysis Agent]
 
-₹3.4L
+C --> D[03<br/>Resource Discovery Agent]
 
-CAPACITY COVERAGE
+D --> E[04<br/>Reconstruction Agent]
 
-91%
+E --> F[05<br/>Scenario Agent]
 
-DEPENDENCY RISK
+F --> G[06<br/>Compliance Agent]
 
-LOW
+G --> H{Human Approval}
 
-COMPLIANCE STATUS
+H -->|Approved| I[✓ Execute Recovery Plan]
 
-REQUIRES HUMAN VERIFICATION
+H -->|Rejected| J[Generate Alternative Path]
+```
 
-==================================================
+| Agent                    | Responsibility                          |
+| ------------------------ | --------------------------------------- |
+| **Sensing Agent**        | Detects and classifies disruptions      |
+| **Capability Agent**     | Identifies what capability was affected |
+| **Resource Agent**       | Discovers available resources           |
+| **Reconstruction Agent** | Generates alternative configurations    |
+| **Scenario Agent**       | Simulates and compares recovery paths   |
+| **Compliance Agent**     | Checks operational constraints          |
+| **Human**                | Approves high-impact decisions          |
 
-12. WORKFORCE INTELLIGENCE
+> PARALLAX is not a collection of chatbots. Each agent performs a specialized task within a coordinated decision workflow.
 
-==================================================
+---
 
-Create a Workforce section.
+# 🕸️ Capability Graph
 
-Important:
+The intelligence behind PARALLAX is a **capability dependency graph**.
 
-Do NOT make this a recruitment platform.
+```mermaid
+graph TD
 
-Workforce is treated as a supply-chain resilience resource.
+S[Supplier]
 
-Title:
+S --> M[Material]
+S --> C[Certification]
 
-"Transferable Capability"
+M --> F[Factory]
 
-Show:
+F --> MA[Machine]
+F --> W[Workforce]
 
-Required Capability:
+MA --> CAP[Capability]
+W --> CAP
 
-Precision Packaging Operation
+CAP --> P[Product Outcome]
+```
 
-Required skills:
+When a resource fails, PARALLAX can trace:
 
-Precision forming
+* Upstream dependencies
+* Downstream impact
+* Hidden single points of failure
+* Capability redundancy
+* Alternative reconstruction paths
 
-Quality inspection
+---
 
-Machine operation
+# 🔥 Break My Supply Chain
 
-Then show candidate internal workers.
+## Stress-test your network before reality does.
 
-Worker:
+PARALLAX includes an interactive chaos simulation engine.
 
-EMP-1842
+Users can deliberately simulate failures:
 
-Skill compatibility:
-
-87%
-
-Machine operation:
-
-92%
-
-Quality inspection:
-
-81%
-
-Precision forming:
-
-76%
-
-Training gap:
-
-9%
-
-Estimated training:
-
-12 hours
-
-Recommendation:
-
-"Deploy after targeted training."
-
-Another worker:
-
-EMP-2197
-
-Compatibility:
-
-79%
-
-Do not expose personal sensitive information.
-
-Use fictional IDs only.
-
-Explain:
-
-"PARALLAX models workforce by capability rather than job title."
-
-==================================================
-
-13. BREAK MY SUPPLY CHAIN
-
-==================================================
-
-This must be one of the strongest screens.
-
-Create a dedicated feature:
-
-# BREAK MY SUPPLY CHAIN
-
-Subheading:
-
-"Stress-test your network before reality does."
-
-Create a simulation interface.
-
-Show a network graph:
-
-Suppliers
-
-Factories
-
-Machines
-
-Routes
-
-Workforce
-
-Capabilities
-
-Provide failure toggles:
-
-[ ] Remove critical supplier
-
-[ ] Disable factory
-
-[ ] Disable machine
-
-[ ] Block logistics route
-
-[ ] Remove specialized workforce
-
-[ ] Multiple simultaneous failures
-
-Primary button:
-
-"RUN CHAOS SIMULATION"
-
-When clicked:
-
-Animate the network.
-
-Nodes disappear or become red.
-
-Then calculate:
-
+```text
+☑ Remove Critical Supplier
+☑ Disable Factory
+☑ Disable Machine
+☑ Block Logistics Route
+☑ Remove Specialized Workforce
+☑ Trigger Multiple Failures
+```
+
+Then PARALLAX recalculates the network.
+
+```text
 NETWORK RESILIENCE
 
-Before:
+Before Simulation
 
-87
+██████████████████░░ 87/100
 
-After:
 
-54
+Failure Injected
 
-Then show:
+        ⚠
 
-"Critical vulnerability discovered"
 
-Example:
+After Simulation
 
-5 suppliers appear independent.
+███████████░░░░░░░░░ 54/100
+```
 
-But all 5 depend on:
+### Hidden vulnerability detected
 
-"Precision Polymer Certification"
-
-Therefore:
-
-Supplier redundancy:
+```text
+SUPPLIER REDUNDANCY
 
 5x
 
-Capability redundancy:
 
-1x
+CAPABILITY REDUNDANCY
 
-Display huge warning:
+1x ⚠️
+```
 
-"5 suppliers ≠ 5 independent recovery paths."
+# 5 suppliers ≠ 5 independent recovery paths.
 
-This should be the most memorable screen in the entire demo.
+This allows organizations to discover vulnerabilities **before an actual disruption occurs**.
 
-==================================================
+---
 
-14. SIMULATION RESULTS
+# 👷 Workforce as a Resilience Resource
 
-==================================================
+PARALLAX also models workforce through **capabilities rather than job titles**.
 
-After the Break My Supply Chain simulation:
+```text
+REQUIRED CAPABILITY
 
-Show:
+Precision Packaging Operation
+```
 
-"3 Critical Dependencies Found"
+The system evaluates:
 
-1.
+```text
+EMP-1842
 
-Precision Polymer Certification
+Machine Operation       █████████░ 92%
+Quality Inspection      ████████░░ 81%
+Precision Forming       ███████░░░ 76%
 
-2.
+Overall Compatibility   87%
 
-Cold-chain regional transport
+Training Gap            9%
 
-3.
+Recommendation
 
-Specialized packaging workforce
+→ Deploy after targeted training
+```
 
-For each show:
+> Workforce becomes part of the recovery network.
 
-Impact
+---
 
-Recovery alternatives
+# 🏗️ System Architecture
 
-Current redundancy
+```mermaid
+flowchart TB
 
-Recommended mitigation
+UI[PARALLAX Frontend]
 
-Example:
+UI --> API[Backend API Layer]
 
-Precision Polymer Certification
+API --> DB[(Supply Chain Database)]
 
-Current redundancy:
+API --> GRAPH[Capability Graph Engine]
 
-1
+API --> RECOVERY[Recovery Engine]
 
-Target:
+API --> AGENTS[Agent Orchestrator]
 
-3
+GRAPH --> RESULTS[Analysis Results]
 
-Recommended action:
+RECOVERY --> RESULTS
 
-Qualify secondary capability provider
+AGENTS --> RESULTS
 
-Button:
+RESULTS --> API
 
-"Add Resilience Plan"
+API --> UI
+```
 
-==================================================
+---
 
-15. AUDIT / HUMAN APPROVAL
+# 🛠️ Technology Stack
 
-==================================================
+### Frontend
 
-Create an Audit & Decisions screen.
+* React
+* TypeScript
+* Vite
+* Tailwind CSS
+* Lovable
 
-This is important because the system should not look like an uncontrolled autonomous AI.
+### Backend
 
-Title:
+* API Layer
+* PostgreSQL / Supabase
 
-"Decision & Audit Trail"
+### Intelligence
 
-Show:
+* Capability Dependency Graph
+* Graph Traversal
+* Recovery Path Generation
+* Scenario Simulation
+* Agent Orchestration
 
-08:42
+### AI
 
-Disruption detected
-
-08:43
-
-Capability identified
-
-08:44
-
-Resources discovered
-
-08:45
-
-3 recovery paths generated
-
-08:46
-
-Scenario simulation completed
-
-08:47
-
-Path C recommended
-
-08:48
-
-Awaiting human approval
-
-Buttons:
-
-"APPROVE RECOVERY"
-
-"REQUEST ALTERNATIVE"
-
-"REJECT"
-
-If user clicks APPROVE:
-
-Show confirmation:
-
-"Recovery plan approved."
-
-Status changes:
-
-RECOVERY:
-
-APPROVED
-
-Then display:
-
-"Execution handoff ready."
-
-==================================================
-
-16. AI AGENT ACTIVITY
-
-==================================================
-
-Across the demo, create a collapsible "Agent Activity" panel.
-
-Example live messages:
-
-[SENSING]
-
-Supplier disruption detected.
-
-[CAPABILITY]
-
-Mapping downstream dependency graph.
-
-[RESOURCE]
-
-Scanning 48 available enterprise resources.
-
-[RECONSTRUCTION]
-
-Generating alternative capability configurations.
-
-[SCENARIO]
-
-Evaluating 3 recovery paths.
-
-[COMPLIANCE]
-
-Checking certification and cold-chain constraints.
-
-[HUMAN]
-
-Awaiting manager approval.
-
-Make this feel like actual agent orchestration.
-
-Do not make it a fake chatbot.
-
-==================================================
-
-17. NETWORK / CAPABILITY GRAPH
-
-==================================================
-
-Create a beautiful interactive graph page.
-
-Title:
-
-"Capability Network"
-
-Nodes:
-
-Supplier
-
-Material
-
-Factory
-
-Machine
-
-Workforce
-
-Route
-
-Capability
-
-Users can click nodes.
-
-Clicking a node highlights:
-
-- upstream dependencies
-
-- downstream dependencies
-
-- alternative paths
-
-- risk level
-
-Use lines with subtle animation.
-
-Critical dependencies should become red when highlighted.
-
-Healthy nodes:
-
-blue/green.
-
-==================================================
-
-18. DATA MODEL
-
-==================================================
-
-Use realistic mock structured data.
-
-Create objects for:
-
-suppliers
-
-factories
-
-machines
-
-inventory
-
-workforceSkills
-
-logisticsRoutes
-
-capabilities
-
-disruptions
-
-recoveryPaths
-
-agents
-
-auditEvents
-
-Each capability should reference dependencies.
-
-Example:
-
-capability:
-
-{
-
- id: "CAP-THS-017",
-
- name: "ThermoShield Packaging",
-
- requirements: [
-
-   "polymer-material",
-
-   "precision-forming",
-
-   "quality-certification",
-
-   "packaging-workforce",
-
-   "cold-chain-logistics"
-
- ]
-
-}
-
-Create enough data to make the UI feel like a real enterprise system.
-
-At least:
-
-10 suppliers
-
-6 factories
-
-12 machines
-
-10 inventory items
-
-15 workforce capability records
-
-8 logistics routes
-
-10 capabilities
-
-Use fictional companies.
-
-Do not use real company data.
-
-==================================================
-
-19. SIMULATION LOGIC
-
-==================================================
-
-The demo must actually work.
-
-Do NOT make every button decorative.
-
-Implement deterministic mock logic.
-
-For example:
-
-If supplier "MedCore Components" is disabled:
-
-1. Mark supplier unavailable.
-
-2. Identify affected capability.
-
-3. Traverse dependency graph.
-
-4. Identify resources that remain available.
-
-5. Generate 3 recovery paths.
-
-6. Score each path.
-
-7. Recommend the highest-scoring path.
-
-8. Update dashboard metrics.
-
-9. Create audit events.
-
-Recovery score should consider:
-
-recovery time
-
-cost
-
-risk
-
-capacity
-
-dependency concentration
-
-resource availability
-
-Use a simple weighted scoring formula.
-
-Example conceptual formula:
-
-Recovery Score =
-
-30% recovery speed
-
-25% risk
-
-20% cost
-
-15% capacity
-
-10% dependency resilience
-
-Show the factors transparently.
-
-==================================================
-
-20. NO FAKE AI CLAIMS
-
-==================================================
-
-Do not claim:
-
-"Powered by GPT" unless actually connected.
-
-Do not claim:
-
-"real-time SAP data"
-
-unless connected.
-
-Use labels such as:
-
-"Simulation"
-
-"Demo Environment"
-
-"Illustrative enterprise data"
-
-The purpose is to demonstrate the product concept.
-
-==================================================
-
-21. SAP-READY ARCHITECTURE
-
-==================================================
-
-Create a small "Integration" section showing how the eventual system could integrate with SAP.
-
-Do not fake a live SAP integration.
-
-Show:
-
-SAP S/4HANA
-
-↓
-
-Enterprise operational data
-
-SAP HANA Cloud
-
-↓
-
-Capability/dependency intelligence
-
-SAP BTP
-
-↓
-
-Agent orchestration
-
-SAP Generative AI Hub
-
-↓
-
-AI reasoning
-
-SAP Build
-
-↓
-
-User interface
-
-Label:
-
-"Prototype integration architecture"
-
-Do not imply these integrations are currently live.
-
-==================================================
-
-22. INTERACTION DETAILS
-
-==================================================
-
-The demo must be smooth enough to present live.
-
-Important interactions:
-
-1. Open active incident
-
-2. Run agent analysis
-
-3. Watch agents activate
-
-4. View lost capability
-
-5. Explore resource graph
-
-6. Generate recovery paths
-
-7. Compare recovery paths
-
-8. Open recommended path
-
-9. Run Break My Supply Chain
-
-10. Approve recovery
-
-11. View audit trail
-
-12. Reset demo
-
-Add a:
-
-"RESET DEMO"
-
-button in the top-right.
-
-When clicked, restore the original scenario.
-
-==================================================
-
-23. DEMO MODE
-
-==================================================
-
-Create a special button:
-
-"START DEMO"
-
-When clicked, automatically guide the presenter through the main scenario.
-
-Demo sequence:
-
-1. Supplier failure
-
-2. Agent detection
-
-3. Capability identification
-
-4. Resource discovery
-
-5. Recovery paths
-
-6. Recommendation
-
-7. Human approval
-
-8. Recovery
-
-9. Break My Supply Chain
-
-Each stage should take only a few seconds.
-
-The presenter must be able to interrupt the sequence and explore manually.
-
-==================================================
-
-24. PRESENTATION MODE
-
-==================================================
-
-Add a "Presentation Mode" button.
-
-When enabled:
-
-- hide unnecessary navigation
-
-- enlarge important metrics
-
-- maximize graphs
-
-- emphasize the active scenario
-
-- show agent progress clearly
-
-This should be optimized for a projector during a hackathon pitch.
-
-==================================================
-
-25. EMPTY / ERROR STATES
-
-==================================================
-
-Build professional states.
-
-If no disruption:
-
-"Network operating normally."
-
-If a recovery path fails:
-
-"Path rejected: insufficient capacity."
-
-If a capability cannot be reconstructed:
-
-"Capability cannot currently be reconstructed."
-
-Then suggest:
-
-"Increase redundancy"
-
-"Qualify alternative resource"
-
-"Develop workforce capability"
-
-==================================================
-
-26. TECH STACK
-
-==================================================
-
-Use:
-
-React
-
-TypeScript
-
-Tailwind CSS
-
-Lucide React
-
-Recharts if useful
-
-React Flow or another graph library if appropriate
-
-Use component architecture.
-
-Suggested components:
-
-Dashboard
-
-IncidentPanel
-
-AgentActivity
-
-CapabilityGraph
-
-ResourceGraph
-
-RecoveryPathCard
-
-RecoveryPathDetail
-
-WorkforceCapability
-
-ChaosSimulator
-
-SimulationResults
-
-AuditTimeline
-
-SAPIntegration
-
-PresentationMode
-
-Keep components modular.
-
-==================================================
-
-27. RESPONSIVENESS
-
-==================================================
-
-Desktop-first.
-
-This is primarily a hackathon presentation dashboard.
-
-Optimize for:
-
-1440x900
-
-1920x1080
-
-Still make it reasonably responsive for smaller screens.
-
-==================================================
-
-28. QUALITY BAR
-
-==================================================
-
-This should NOT look like something generated in 10 minutes.
-
-It should look like a real enterprise product prototype.
-
-Priorities:
-
-1. Excellent visual hierarchy
-
-2. Extremely clear storytelling
-
-3. Real interactions
-
-4. Smooth animations
-
-5. Strong data visualization
-
-6. Consistent terminology
-
-7. No broken buttons
-
-8. No placeholder Lorem Ipsum
-
-9. No generic stock images
-
-10. No unnecessary pages
-
-Every screen must answer:
-
-"What does this tell the supply-chain manager?"
-
-==================================================
-
-29. CRITICAL PRODUCT LANGUAGE
-
-==================================================
-
-Use these exact concepts consistently:
-
-"Capability"
-
-"Capability Reconstruction"
-
-"Recovery Path"
-
-"Resource Network"
-
-"Capability Redundancy"
-
-"Hidden Dependency"
-
-"Agentic Recovery"
-
-"Human-in-the-loop"
-
-"Break My Supply Chain"
-
-"Same outcome. Different path."
-
-Avoid repeatedly using:
-
-"AI-powered dashboard"
-
-"smart supply chain"
-
-"next-generation platform"
-
-"revolutionary AI"
-
-"AI assistant"
-
-The product should sound technically credible, not marketing-heavy.
-
-==================================================
-
-30. FINAL PRODUCT MESSAGE
-
-==================================================
-
-The entire application should reinforce this idea:
-
-Traditional resilience:
-
-"Do we have a backup supplier?"
-
-PARALLAX resilience:
-
-"How many different ways can we achieve the same outcome?"
-
-Final screen:
-
-PARALLAX
-
-SAME OUTCOME.
-
-DIFFERENT PATH.
-
-"Don't replace the broken link.
-
-Reconstruct the capability."
-
-==================================================
-
-31. IMPORTANT: BUILD THE ACTUAL DEMO
-
-==================================================
-
-Do not only create static screens.
-
-Implement the state transitions.
-
-The following flow MUST work:
-
-START DEMO
-
-→ Supplier failure
-
-→ Agent analysis
-
-→ Capability identified
-
-→ Resources discovered
-
-→ Recovery paths generated
-
-→ Recommended path selected
-
-→ Human approval
-
-→ Recovery status updated
-
-→ Break My Supply Chain
-
-→ Vulnerability discovered
-
-→ Reset
-
-Use mock data and local state if necessary.
-
-No authentication is required.
-
-No real database is required.
-
-No real SAP connection is required.
-
-The goal is a polished, believable, interactive hackathon prototype.
-
-Before finishing:
-
-- test every button
-
-- test the entire demo flow
-
-- ensure no console errors
-
-- ensure graphs render correctly
-
-- ensure all navigation works
-
-- ensure the Reset Demo button works
-
-- ensure Presentation Mode works
-
-- ensure the application looks excellent at 1920x1080
-
-Build this as if it will be demonstrated live to a panel of SAP judges who have 5 minutes to understand why PARALLAX is different from a conventional supply-chain monitoring or supplier-risk product.
-
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/50fa4328-cf49-4eda-91d1-1c3fda566290).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+* LLM-powered reasoning
+* Multi-agent workflow
+* Human-in-the-loop decision making
+
+### Visualization
+
+* Interactive Supply Chain Graphs
+* Capability Maps
+* Resilience Metrics
+* Chaos Simulation
+
+---
+
+# 📊 Core Product Modules
+
+| Module                       | Purpose                             |
+| ---------------------------- | ----------------------------------- |
+| 🚨 Disruption Detection      | Detect and classify failures        |
+| 🕸️ Capability Graph         | Understand dependency relationships |
+| 🔍 Resource Discovery        | Find available resources            |
+| 🧩 Capability Reconstruction | Generate alternative configurations |
+| 📈 Scenario Engine           | Compare recovery paths              |
+| 🔥 Chaos Simulation          | Stress-test the network             |
+| 🤖 Agent Orchestration       | Coordinate intelligent workflows    |
+| 👤 Human Approval            | Keep critical decisions accountable |
+| 📜 Audit Trail               | Track system decisions              |
+
+---
+
+# 🎯 Core Innovation
+
+Traditional supply-chain resilience:
+
+```text
+Resource A fails
+      ↓
+Find Resource B
+```
+
+PARALLAX:
+
+```text
+Resource A fails
+      ↓
+What capability did it provide?
+      ↓
+What dependencies create that capability?
+      ↓
+Which resources are still available?
+      ↓
+Can we combine them differently?
+      ↓
+Generate alternative configurations
+      ↓
+Simulate consequences
+      ↓
+Recommend optimal recovery
+```
+
+## The shift
+
+```text
+FROM
+
+Resource Replacement
+        ↓
+
+TO
+
+Capability Reconstruction
+```
+
+---
+
+# 📁 Project Structure
+
+```text
+capability-navigator/
+
+├── src/
+│
+│   ├── components/
+│   │   ├── dashboard/
+│   │   ├── disruption/
+│   │   ├── capability/
+│   │   ├── recovery/
+│   │   └── simulation/
+│   │
+│   ├── pages/
+│   │
+│   ├── services/
+│   │   ├── api.ts
+│   │   ├── disruptionService.ts
+│   │   ├── graphService.ts
+│   │   ├── recoveryService.ts
+│   │   ├── simulationService.ts
+│   │   └── agentService.ts
+│   │
+│   ├── types/
+│   │
+│   └── utils/
+│
+├── public/
+│
+└── README.md
+```
+
+---
+
+# 🚀 Getting Started
+
+## Clone the repository
+
+```bash
+git clone https://github.com/gilldilshaan/capability-navigator.git
+```
+
+## Navigate to the project
+
+```bash
+cd capability-navigator
+```
+
+## Install dependencies
+
+```bash
+npm install
+```
+
+## Run locally
+
+```bash
 npm run dev
 ```
+
+Open:
+
+```text
+http://localhost:5173
+```
+
+---
+
+# 🎬 Demo Flow
+
+The recommended demo sequence:
+
+```text
+1. Open Resilience Command Center
+
+        ↓
+
+2. Show Critical Supplier Disruption
+
+        ↓
+
+3. Run Agent Analysis
+
+        ↓
+
+4. Reveal Lost Capability
+
+        ↓
+
+5. Explore Capability Dependencies
+
+        ↓
+
+6. Discover Available Resources
+
+        ↓
+
+7. Generate Recovery Paths
+
+        ↓
+
+8. Compare Scenarios
+
+        ↓
+
+9. Select Recommended Path
+
+        ↓
+
+10. Human Approval
+
+        ↓
+
+11. Break My Supply Chain
+
+        ↓
+
+12. Reveal Hidden Vulnerability
+```
+
+---
+
+# 👥 Team PARALLAX
+
+<table>
+<tr>
+<td align="center">
+
+### Dilshaan Gill
+
+**Frontend & Integration**
+
+</td>
+
+<td align="center">
+
+### Bani
+
+**Backend & Database**
+
+</td>
+
+<td align="center">
+
+### Suvreen
+
+**Capability Graph Engine**
+
+</td>
+
+<td align="center">
+
+### Diya
+
+**Recovery & Simulation Engine**
+
+</td>
+
+<td align="center">
+
+### Riya
+
+**Agentic AI & Orchestration**
+
+</td>
+</tr>
+</table>
+
+---
+
+# 🧭 Our Vision
+
+Supply chains should not only react to failures.
+
+They should understand:
+
+* What truly matters
+* What capabilities are vulnerable
+* What hidden dependencies exist
+* How systems can adapt
+* How outcomes can be reconstructed
+
+---
+
+<div align="center">
+
+# PARALLAX
+
+### Same outcome. Different path.
+
+**Reimagining supply-chain resilience through capability reconstruction.**
+
+<br />
+
+Built for **Hackfest 2026**
+
+<br />
+
+⭐ **If you find the concept interesting, consider starring the repository.**
+
+</div>
+```
+
+## My recommendation
+
+This version is much stronger because it:
+
+* Looks like a **real open-source project**
+* Explains the innovation immediately
+* Uses diagrams and flowcharts
+* Has visual hierarchy
+* Makes **Break My Supply Chain** memorable
+* Clearly distinguishes PARALLAX from a normal supply-chain dashboard
+* Shows technical depth without becoming boring
+
+One thing I would additionally do later: add **actual screenshots/GIFs of your Lovable UI** near the top. That would make the README significantly more impressive.
