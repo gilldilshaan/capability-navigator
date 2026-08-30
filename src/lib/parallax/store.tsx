@@ -8,11 +8,14 @@ import {
   type ReactNode,
 } from "react";
 import {
+  activeDisruption,
   agentDefs,
   failureToggles,
   recoveryPaths,
   type RecoveryPath,
 } from "./data";
+import { runParallaxWorkflowServer } from "./workflow/server";
+import type { WorkflowResult } from "./workflow/schema";
 
 export type AgentStatus = "QUEUED" | "RUNNING" | "COMPLETE";
 
@@ -70,6 +73,7 @@ interface ParallaxState {
   selectedPathId: RecoveryPath["id"] | null;
   recommendedPathId: RecoveryPath["id"] | null;
   recoveryStatus: RecoveryStatus;
+  workflowResult: WorkflowResult | null;
   /* network */
   resilience: number;
   activeDisruptions: number;
@@ -138,6 +142,7 @@ const initialState: ParallaxState = {
   selectedPathId: null,
   recommendedPathId: null,
   recoveryStatus: "NOT STARTED",
+  workflowResult: null,
   resilience: BASE_RESILIENCE,
   activeDisruptions: 1,
   redundancy: 3.8,
@@ -206,43 +211,136 @@ export function ParallaxProvider({ children }: { children: ReactNode }) {
     navigate({ to: "/disruptions" });
   }, [navigate, patch]);
 
-  /** One click = one deterministic pass. No timers, no self-advancing state. */
-  const runAnalysis = useCallback(() => {
+  /** One click runs the typed server workflow. No timers or autonomous execution. */
+  const runAnalysis = useCallback(async () => {
+    const result = await runParallaxWorkflowServer({ data: activeDisruption });
     setState((s) => {
       const activity = [...s.activity];
       let offset = 20;
       agentDefs.forEach((def) => {
         offset += 6;
-        activity.push({ id: nextId(), time: clock(offset), channel: def.code, text: def.doneMessage });
+        const stage = result.trace.find(
+          (entry) =>
+            entry.stage ===
+            (
+              {
+                SENSING: "DISRUPTION",
+                CAPABILITY: "CAPABILITY",
+                RESOURCE: "RESOURCE_DISCOVERY",
+                RECONSTRUCTION: "RECOVERY",
+                SCENARIO: "SCENARIO_COMPARISON",
+                COMPLIANCE: "COMPLIANCE",
+              } as const
+            )[
+              def.code as
+                "SENSING" | "CAPABILITY" | "RESOURCE" | "RECONSTRUCTION" | "SCENARIO" | "COMPLIANCE"
+            ],
+        );
+        activity.push({
+          id: nextId(),
+          time: clock(offset),
+          channel: def.code,
+          text: stage?.summary ?? def.doneMessage,
+        });
       });
+      const recommended = result.recoveryPaths.find((path) => path.id === result.recommendedPathId);
 
       return {
         ...s,
         incidentOpen: true,
         analysis: "complete",
         analysisProgress: 100,
-        capabilityIdentified: true,
-        resourcesDiscovered: true,
-        pathsGenerated: true,
-        recommendedPathId: "C",
+        capabilityIdentified: result.affectedCapabilities.length > 0,
+        resourcesDiscovered: result.availableResources.length > 0,
+        pathsGenerated: result.recoveryPaths.length > 0,
+        recommendedPathId: result.recommendedPathId,
         recoveryStatus: "AWAITING APPROVAL",
+        workflowResult: result,
         readiness: 92,
         agents: agentDefs.map((a) => ({
           id: a.id,
           code: a.code,
           name: a.name,
           status: "COMPLETE" as AgentStatus,
-          message: a.doneMessage,
+          message:
+            result.trace.find(
+              (entry) =>
+                entry.stage ===
+                (
+                  {
+                    SENSING: "DISRUPTION",
+                    CAPABILITY: "CAPABILITY",
+                    RESOURCE: "RESOURCE_DISCOVERY",
+                    RECONSTRUCTION: "RECOVERY",
+                    SCENARIO: "SCENARIO_COMPARISON",
+                    COMPLIANCE: "COMPLIANCE",
+                  } as const
+                )[
+                  a.code as
+                    | "SENSING"
+                    | "CAPABILITY"
+                    | "RESOURCE"
+                    | "RECONSTRUCTION"
+                    | "SCENARIO"
+                    | "COMPLIANCE"
+                ],
+            )?.summary ?? a.doneMessage,
         })),
-        activity: [...activity, { id: nextId(), time: clock(offset + 8), channel: "HUMAN", text: "Awaiting manager approval." }],
+        activity: [
+          ...activity,
+          {
+            id: nextId(),
+            time: clock(offset + 8),
+            channel: "HUMAN",
+            text: "Awaiting manager approval.",
+          },
+        ],
         audit: [
           ...s.audit,
-          { id: nextId(), time: "08:43", label: "Capability identified", detail: "CAP-THS-017 · ThermoShield Packaging · 7 sub-capabilities", tone: "info" as const },
-          { id: nextId(), time: "08:44", label: "Resources discovered", detail: "31 of 48 enterprise resources usable", tone: "info" as const },
-          { id: nextId(), time: "08:45", label: "3 recovery paths generated", detail: "Path A · Path B · Path C", tone: "info" as const },
-          { id: nextId(), time: "08:46", label: "Scenario simulation completed", detail: "Weighted scoring across 5 factors", tone: "info" as const },
-          { id: nextId(), time: "08:47", label: "Path C recommended", detail: "Recovery score 94/100 · dependency risk LOW", tone: "success" as const },
-          { id: nextId(), time: "08:48", label: "Awaiting human approval", detail: "Routed to Aditi Sharma · Resilience Manager", tone: "warning" as const },
+          {
+            id: nextId(),
+            time: "08:43",
+            label: "Capability identified",
+            detail: `${result.affectedCapabilities.length} affected capabilities mapped`,
+            tone: "info" as const,
+          },
+          {
+            id: nextId(),
+            time: "08:44",
+            label: "Resources discovered",
+            detail: `${result.availableResources.length} usable resources discovered`,
+            tone: "info" as const,
+          },
+          {
+            id: nextId(),
+            time: "08:45",
+            label: "Recovery paths generated",
+            detail: `${result.recoveryPaths.length} configurations generated from current resources`,
+            tone: "info" as const,
+          },
+          {
+            id: nextId(),
+            time: "08:46",
+            label: "Scenario simulation completed",
+            detail: "Weighted scores calculated from generated path factors",
+            tone: "info" as const,
+          },
+          {
+            id: nextId(),
+            time: "08:47",
+            label: "Recommendation prepared",
+            detail: recommended
+              ? `Path ${recommended.id} · score ${result.comparison.find((entry) => entry.pathId === recommended.id)?.score ?? 0}/100`
+              : "No eligible path",
+            tone: "success" as const,
+          },
+          {
+            id: nextId(),
+            time: "08:48",
+            label: "Awaiting human approval",
+            detail: "Recommendation is pending resilience-manager approval",
+            tone: "warning" as const,
+          },
         ],
       };
     });
@@ -382,9 +480,11 @@ export function ParallaxProvider({ children }: { children: ReactNode }) {
   const value = useMemo<ParallaxApi>(
     () => ({
       ...state,
-      paths: recoveryPaths,
+      paths: state.workflowResult?.recoveryPaths ?? recoveryPaths,
       recommendedPath: state.recommendedPathId
-        ? recoveryPaths.find((p) => p.id === state.recommendedPathId) ?? null
+        ? (state.workflowResult?.recoveryPaths ?? recoveryPaths).find(
+            (p) => p.id === state.recommendedPathId,
+          ) ?? null
         : null,
       openIncident,
       runAnalysis,
