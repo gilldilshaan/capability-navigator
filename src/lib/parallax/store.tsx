@@ -14,7 +14,7 @@ import {
   recoveryPaths,
   type RecoveryPath,
 } from "./data";
-import { runParallaxWorkflowServer } from "./workflow/server";
+import { postWorkflowApi } from "./api-client";
 import type { WorkflowResult } from "./workflow/schema";
 
 export type AgentStatus = "QUEUED" | "RUNNING" | "COMPLETE";
@@ -213,7 +213,8 @@ export function ParallaxProvider({ children }: { children: ReactNode }) {
 
   /** One click runs the typed server workflow. No timers or autonomous execution. */
   const runAnalysis = useCallback(async () => {
-    const result = await runParallaxWorkflowServer({ data: activeDisruption });
+    const workflow = await postWorkflowApi(activeDisruption.id);
+    const result = workflow.result;
     setState((s) => {
       const activity = [...s.activity];
       let offset = 20;
