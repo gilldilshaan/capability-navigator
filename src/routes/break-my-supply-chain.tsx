@@ -42,6 +42,7 @@ function BreakMySupplyChain() {
     clearChaos,
     chaosRunning,
     chaosProgress,
+    pipelineStage,
     chaosResult,
     vulnerabilities,
     resiliencePlans,
@@ -133,7 +134,14 @@ function BreakMySupplyChain() {
             title="Network under stress"
             subtitle="Suppliers · factories · machines · routes · workforce · capabilities"
             right={
-              chaosResult ? (
+              chaosRunning ? (
+                <StatusPill tone="warning">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="inline-flex size-1.5 rounded-full bg-current breath" />
+                    {pipelineStage || "Simulating"}
+                  </span>
+                </StatusPill>
+              ) : chaosResult ? (
                 <StatusPill tone="critical">{chaosResult.removed.length} nodes lost</StatusPill>
               ) : (
                 <StatusPill tone="success">Baseline</StatusPill>

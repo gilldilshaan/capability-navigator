@@ -1,0 +1,41 @@
+/*
+ * PARALLAX card system — three visual levels only.
+ * LEVEL 1 .panel        primary workspace panel
+ * LEVEL 2 .panel-inset  supporting panel inside a Level 1
+ * LEVEL 3 (no card)     whitespace, dividers and typography grouping
+ */
+
+@utility panel {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px color-mix(in oklab, var(--color-foreground) 5%, transparent);
+}
+
+@utility panel-inset {
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+@utility grid-backdrop {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--color-border) 70%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--color-border) 70%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+@utility glow-critical {
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-critical) 40%, transparent),
+    0 6px 16px -10px color-mix(in oklab, var(--color-critical) 45%, transparent);
+}
+
+@utility glow-info {
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-info) 40%, transparent),
+    0 6px 16px -10px color-mix(in oklab, var(--color-info) 45%, transparent);
+}
+
+@utility glow-success {
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-success) 40%, transparent),
+    0 6px 16px -10px color-mix(in oklab, var(--color-success) 45%, transparent);
+}

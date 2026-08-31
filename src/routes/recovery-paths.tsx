@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Route as RouteIcon } from "lucide-react";
 
+import { RecommendationCard } from "@/components/parallax/RecommendationCard";
 import { RecoveryPathCard } from "@/components/parallax/RecoveryPathCard";
 import { RecoveryPathDetail } from "@/components/parallax/RecoveryPathDetail";
 import {
@@ -12,6 +13,7 @@ import {
   StatusPill,
 } from "@/components/parallax/primitives";
 import { scorePath, useParallax } from "@/lib/parallax/store";
+import type { RecoveryPath } from "@/lib/parallax/data";
 
 export const Route = createFileRoute("/recovery-paths")({
   head: () => ({
@@ -49,6 +51,17 @@ function RecoveryPaths() {
   } = useParallax();
 
   const selected = paths.find((p) => p.id === selectedPathId) ?? null;
+  const recommendedPath = paths.find((p) => p.id === recommendedPathId) ?? null;
+
+  /* Comparative labels derived from the engine data — never invented. */
+  const badgeFor = (p: RecoveryPath): string | undefined => {
+    if (p.id === recommendedPathId) return undefined;
+    if (paths.length && p.recoveryDays === Math.min(...paths.map((x) => x.recoveryDays)))
+      return "Fastest";
+    if (paths.length && p.costLakh === Math.min(...paths.map((x) => x.costLakh)))
+      return "Lowest cost";
+    return undefined;
+  };
 
   return (
     <div className="space-y-6">
@@ -84,6 +97,24 @@ function RecoveryPaths() {
         />
       ) : (
         <>
+          {recommendedPath ? (
+            <RecommendationCard
+              title={`Path ${recommendedPath.id} — ${recommendedPath.title}`}
+              confidence={scorePath(recommendedPath)}
+              reasoning={recommendedPath.rationale}
+              benefits={[
+                ...[...recommendedPath.factors]
+                  .sort((a, b) => b.score - a.score)
+                  .slice(0, 3)
+                  .map((f) => `${f.label}: ${f.score}/100`),
+                `${recommendedPath.capacityCoveragePct}% capacity coverage`,
+              ]}
+              risks={[recommendedPath.compliance, recommendedPath.dependencyConcentration]}
+              requiresHumanApproval
+              action={{ label: "Open decision center", to: "/audit" }}
+            />
+          ) : null}
+
           <div className="grid gap-4 xl:grid-cols-3">
             {paths.map((p) => (
               <RecoveryPathCard
@@ -91,6 +122,7 @@ function RecoveryPaths() {
                 path={p}
                 recommended={p.id === recommendedPathId}
                 selected={p.id === selectedPathId}
+                badge={badgeFor(p)}
                 onOpen={() => {
                   const next = p.id === selectedPathId ? null : p.id;
                   selectPath(next);

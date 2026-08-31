@@ -14,9 +14,21 @@ const toneClasses: Record<Tone, string> = {
 export function toneFor(status: string): Tone {
   const s = status.toUpperCase();
   if (["OFFLINE", "CRITICAL", "HIGH", "REJECTED", "FAILED"].includes(s)) return "critical";
-  if (["PARTIAL", "AT RISK", "MEDIUM", "WARNING", "AWAITING APPROVAL", "ALTERNATIVE REQUESTED", "RUNNING", "MEDIUM-LOW"].includes(s))
+  if (
+    [
+      "PARTIAL",
+      "AT RISK",
+      "MEDIUM",
+      "WARNING",
+      "AWAITING APPROVAL",
+      "ALTERNATIVE REQUESTED",
+      "RUNNING",
+      "MEDIUM-LOW",
+    ].includes(s)
+  )
     return "warning";
-  if (["AVAILABLE", "COMPLETE", "APPROVED", "LOW", "OPERATIONAL", "RECOVERED"].includes(s)) return "success";
+  if (["AVAILABLE", "COMPLETE", "APPROVED", "LOW", "OPERATIONAL", "RECOVERED"].includes(s))
+    return "success";
   if (["IDLE", "QUEUED", "INFO"].includes(s)) return "info";
   return "neutral";
 }
@@ -59,7 +71,7 @@ export function Panel({
   return (
     <section
       className={cn(
-        "panel",
+        "panel transition-colors duration-300",
         tone === "critical" && "border-critical/35",
         tone === "info" && "border-info/35",
         tone === "success" && "border-success/35",
@@ -85,12 +97,21 @@ export function PanelHeader({
   className?: string;
 }) {
   return (
-    <header className={cn("flex items-start justify-between gap-4 border-b border-border px-4 py-3", className)}>
+    <header
+      className={cn(
+        "flex items-start justify-between gap-4 border-b border-border px-4 py-3",
+        className,
+      )}
+    >
       <div className="flex items-start gap-2.5">
         {icon ? <span className="mt-0.5 text-muted-foreground">{icon}</span> : null}
         <div>
-          <h2 className="text-[13px] font-semibold tracking-[0.02em] text-foreground uppercase">{title}</h2>
-          {subtitle ? <p className="mt-0.5 max-w-2xl text-xs text-muted-foreground">{subtitle}</p> : null}
+          <h2 className="text-[13px] font-semibold tracking-[0.02em] text-foreground uppercase">
+            {title}
+          </h2>
+          {subtitle ? (
+            <p className="mt-0.5 max-w-2xl text-xs text-muted-foreground">{subtitle}</p>
+          ) : null}
         </div>
       </div>
       {right ? <div className="shrink-0">{right}</div> : null}
@@ -113,8 +134,10 @@ export function PageHeader({
     <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-5">
       <div>
         {eyebrow ? <p className="label-xs mb-2">{eyebrow}</p> : null}
-        <h1 className="text-2xl font-semibold tracking-[-0.01em] text-foreground">{title}</h1>
-        {subtitle ? <p className="mt-1.5 max-w-3xl text-sm text-muted-foreground">{subtitle}</p> : null}
+        <h1 className="page-title">{title}</h1>
+        {subtitle ? (
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">{subtitle}</p>
+        ) : null}
       </div>
       {right ? <div className="flex items-center gap-2">{right}</div> : null}
     </div>
@@ -128,6 +151,7 @@ export function KpiCard({
   note,
   tone = "neutral",
   large,
+  visual,
 }: {
   label: string;
   value: string;
@@ -135,6 +159,8 @@ export function KpiCard({
   note: string;
   tone?: Tone;
   large?: boolean;
+  /** Optional mini-visualization (gauge, meter, sparkline) docked to the right. */
+  visual?: ReactNode;
 }) {
   const accent =
     tone === "critical"
@@ -158,17 +184,44 @@ export function KpiCard({
           tone === "neutral" && "bg-border-strong",
         )}
       />
-      <p className="label-xs">{label}</p>
-      <p className={cn("num mt-3 font-semibold", accent, large ? "text-5xl" : "text-3xl")}>
-        {value}
-        {suffix ? <span className="ml-1 text-base font-normal text-muted-foreground">{suffix}</span> : null}
-      </p>
-      <p className="mt-2 text-xs text-muted-foreground">{note}</p>
+      <div className={cn("flex items-start gap-3", visual && "justify-between")}>
+        <div className="min-w-0">
+          <p className="label-xs">{label}</p>
+          <p className={cn("num mt-3 font-semibold", accent, large ? "text-5xl" : "text-4xl")}>
+            {value}
+            {suffix ? (
+              <span className="ml-1 text-base font-normal text-muted-foreground">{suffix}</span>
+            ) : null}
+          </p>
+          <p className="mt-2 text-xs text-muted-foreground">{note}</p>
+        </div>
+        {visual ? <div className="shrink-0 self-center">{visual}</div> : null}
+      </div>
     </div>
   );
 }
 
-export function DataRow({ label, value, mono = true }: { label: string; value: ReactNode; mono?: boolean }) {
+/** Marks AI/agentic surfaces. Uses the reserved --ai-accent, nothing else. */
+export function AiTag({ children = "AI" }: { children?: ReactNode }) {
+  return (
+    <span
+      title="AI-generated intelligence"
+      className="inline-flex items-center gap-1 rounded-sm border border-ai/40 bg-ai/10 px-1.5 py-0.5 font-mono text-[10px] leading-4 tracking-[0.09em] text-ai uppercase"
+    >
+      {children}
+    </span>
+  );
+}
+
+export function DataRow({
+  label,
+  value,
+  mono = true,
+}: {
+  label: string;
+  value: ReactNode;
+  mono?: boolean;
+}) {
   return (
     <div className="flex items-baseline justify-between gap-4 border-b border-border/70 py-2 last:border-0">
       <span className="label-xs shrink-0">{label}</span>

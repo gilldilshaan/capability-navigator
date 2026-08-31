@@ -9,11 +9,14 @@ export function RecoveryPathCard({
   path,
   recommended,
   selected,
+  badge,
   onOpen,
 }: {
   path: RecoveryPath;
   recommended?: boolean;
   selected?: boolean;
+  /** Comparative label derived from the engine data, e.g. "Fastest" / "Lowest cost". */
+  badge?: string | undefined;
   onOpen: () => void;
 }) {
   const score = scorePath(path);
@@ -25,12 +28,21 @@ export function RecoveryPathCard({
         selected && "glow-info",
       )}
     >
-      {recommended ? (
-        <div className="mb-3 -mt-1 flex items-center gap-1.5">
-          <Sparkles className="size-3.5 text-success" />
-          <span className="font-mono text-[10px] tracking-[0.14em] text-success uppercase">
-            Parallax recommendation
-          </span>
+      {recommended || badge ? (
+        <div className="mb-3 -mt-1 flex flex-wrap items-center gap-1.5">
+          {recommended ? (
+            <>
+              <Sparkles className="size-3.5 text-success" />
+              <span className="font-mono text-[10px] tracking-[0.14em] text-success uppercase">
+                Parallax recommendation
+              </span>
+            </>
+          ) : null}
+          {badge && !recommended ? (
+            <span className="rounded-sm border border-info/40 bg-info/10 px-1.5 py-0.5 font-mono text-[10px] tracking-[0.1em] text-info uppercase">
+              {badge}
+            </span>
+          ) : null}
         </div>
       ) : null}
 

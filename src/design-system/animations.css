@@ -1,0 +1,82 @@
+/*
+ * PARALLAX motion — functional only. Every animation communicates state
+ * (running, active, arriving results, critical attention), is short and
+ * subtle, and is disabled under prefers-reduced-motion. Nothing loops on
+ * idle screens except the RUNNING agent breath.
+ */
+
+@keyframes parallax-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes parallax-edge {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+@keyframes parallax-pulse-ring {
+  0% {
+    opacity: 0.55;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.1);
+  }
+}
+
+@keyframes parallax-breath {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@utility edge-flow {
+  stroke-dasharray: 5 7;
+  animation: parallax-edge 1.2s linear infinite;
+}
+
+@utility pulse-ring {
+  animation: parallax-pulse-ring 1.6s ease-out infinite;
+}
+
+@utility rise-in {
+  animation: parallax-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility sweep {
+  opacity: 0;
+}
+
+/* RUNNING-state breath for agent indicators and processing dots. */
+@utility breath {
+  animation: parallax-breath 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise-in,
+  .edge-flow,
+  .pulse-ring,
+  .breath {
+    animation: none !important;
+  }
+  .rise-in {
+    opacity: 1;
+  }
+  .pulse-ring,
+  .sweep {
+    opacity: 0;
+  }
+}
