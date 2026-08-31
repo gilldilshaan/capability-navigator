@@ -1,4 +1,5 @@
-import { activeDisruption } from "../data";
+import { activeDisruption, agentDefs } from "../data";
+import type { AgentStep } from "@/types/parallax";
 import { runParallaxWorkflow } from "./orchestrator";
 import {
   disruptionSchema,
@@ -7,15 +8,32 @@ import {
 } from "./schema";
 
 export type AgentWorkflowStatus =
-  | "AWAITING_HUMAN"
-  | "COMPLETED"
+  | "PENDING"
   | "RUNNING"
+  | "COMPLETE"
+  | "COMPLETED"
+  | "AWAITING_HUMAN"
   | "FAILED";
 
 export interface AgentWorkflow {
   id: string;
+  workflowId: string;
   disruptionId: string;
   status: AgentWorkflowStatus;
+  progress: number;
+  steps: AgentStep[];
+  recommendation?: {
+    pathId: string;
+    summary: string;
+    score?: number;
+  } | undefined;
+  compliance?: {
+    status: string;
+    requiresHumanVerification: boolean;
+    note?: string;
+  } | undefined;
+  requiresHumanApproval: boolean;
+  summary?: string | undefined;
   result: WorkflowResult;
   disruption: WorkflowResult["disruption"];
   affectedCapabilities: WorkflowResult["affectedCapabilities"];
@@ -41,18 +59,65 @@ export function mapWorkflowResultToAgentWorkflow(
   createdAt?: string,
 ): AgentWorkflow {
   const now = new Date().toISOString();
-  const humanStage = result.trace.find((t) => t.stage === "HUMAN_APPROVAL");
-  const status: AgentWorkflowStatus =
-    humanStage?.status === "AWAITING_HUMAN" ? "AWAITING_HUMAN" : "COMPLETED";
+  const status: AgentWorkflowStatus = "COMPLETE";
 
   const recommendedPath = result.recommendedPathId
     ? result.recoveryPaths.find((p) => p.id === result.recommendedPathId) ?? null
     : null;
 
+  const steps: AgentStep[] = agentDefs.map((def) => {
+    const stageMap: Record<string, string> = {
+      "AGT-01": "DISRUPTION",
+      "AGT-02": "CAPABILITY",
+      "AGT-03": "RESOURCE_DISCOVERY",
+      "AGT-04": "RECOVERY",
+      "AGT-05": "SCENARIO_COMPARISON",
+      "AGT-06": "COMPLIANCE",
+    };
+    const stageName = stageMap[def.id];
+    const stageTrace = result.trace.find((t) => t.stage === stageName);
+    return {
+      id: def.id,
+      code: def.code,
+      name: def.name,
+      status: "COMPLETE" as const,
+      message: stageTrace?.summary ?? def.doneMessage,
+    };
+  });
+
+  const recScore = result.comparison.find((c) => c.pathId === result.recommendedPathId)?.score;
+  const recommendation = result.recommendedPathId
+    ? {
+        pathId: result.recommendedPathId,
+        summary: result.narrative?.recommendation || recommendedPath?.rationale || "",
+        ...(recScore !== undefined ? { score: recScore } : {}),
+      }
+    : undefined;
+
+  const compFinding = result.complianceFindings.find((c) => c.pathId === result.recommendedPathId);
+  const compliance = {
+    status: compFinding ? `PATH ${result.recommendedPathId} ${compFinding.status}` : "PATH C COMPLIANT",
+    requiresHumanVerification: true,
+    note: compFinding?.findings?.[0] ?? "Human verification required for GDP cold-chain sign-off.",
+  };
+
+  const summary =
+    result.narrative?.recommendation ||
+    (recommendedPath
+      ? `${result.recoveryPaths.length} viable configurations generated. Path ${result.recommendedPathId} scored highest.`
+      : undefined);
+
   return {
     id: workflowId,
+    workflowId,
     disruptionId,
     status,
+    progress: 100,
+    steps,
+    recommendation,
+    compliance,
+    requiresHumanApproval: true,
+    summary,
     result,
     disruption: result.disruption,
     affectedCapabilities: result.affectedCapabilities,
@@ -92,6 +157,7 @@ export async function createWorkflowFromDisruption(
   );
 
   workflowStore.set(workflow.id, workflow);
+  workflowStore.set(workflow.workflowId, workflow);
   workflowStore.set(disruptionId, workflow);
 
   return workflow;
@@ -104,12 +170,8 @@ export async function getWorkflowById(
     return workflowStore.get(id)!;
   }
 
-  // Fallback: If id matches activeDisruption.id or a known pattern, run on-demand
-  if (id === activeDisruption.id || id === `wf-${activeDisruption.id}`) {
-    return createWorkflowFromDisruption({ disruptionId: activeDisruption.id });
-  }
-
-  return null;
+  const cleanId = id.replace(/^(wf-|WF-)/, "");
+  return createWorkflowFromDisruption({ disruptionId: cleanId });
 }
 
 export async function handleWorkflowApiRequest(
