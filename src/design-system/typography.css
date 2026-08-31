@@ -1,0 +1,29 @@
+/*
+ * PARALLAX typography — one confident hierarchy, sparing uppercase.
+ * Page title 28px · section titles in PanelHeader · body 13-15px ·
+ * metadata 10-11px mono uppercase (label-xs), used sparingly.
+ */
+
+@utility label-xs {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
+@utility num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Confident page-level title — hierarchy anchor for every route. */
+@utility page-title {
+  font-size: 1.75rem;
+  line-height: 2.125rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-foreground);
+}

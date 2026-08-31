@@ -221,7 +221,8 @@ const initialState: ParallaxState = {
   demoRunning: false,
   demoStep: 0,
   demoLabel: "",
-  agentPanelOpen: true,
+  /* Activity rail defaults to collapsed (56px) — expand via the rail. */
+  agentPanelOpen: false,
 };
 
 /** Transparent weighted scoring: 30% speed, 25% risk, 20% cost, 15% capacity, 10% dependency. */

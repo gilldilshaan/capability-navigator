@@ -1,7 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Users } from "lucide-react";
+import { ChevronDown, Users } from "lucide-react";
+import { useState } from "react";
 
-import { DemoTag, Meter, PageHeader, Panel, PanelHeader, StatusPill } from "@/components/parallax/primitives";
+import {
+  DemoTag,
+  Meter,
+  PageHeader,
+  Panel,
+  PanelHeader,
+  StatusPill,
+} from "@/components/parallax/primitives";
 import { workforce } from "@/lib/parallax/data";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +25,8 @@ export const Route = createFileRoute("/workforce")({
       { property: "og:title", content: "Transferable Capability — PARALLAX Workforce" },
       {
         property: "og:description",
-        content: "Workforce treated as a supply-chain resilience resource, not a recruitment pipeline.",
+        content:
+          "Workforce treated as a supply-chain resilience resource, not a recruitment pipeline.",
       },
     ],
   }),
@@ -34,6 +43,11 @@ const skills = [
 function Workforce() {
   const ranked = [...workforce].sort((a, b) => b.compatibility - a.compatibility);
   const deployable = ranked.filter((w) => w.compatibility >= 70);
+  /* Progressive disclosure: strongest candidates first, rest on demand. */
+  const [showAll, setShowAll] = useState(false);
+  const VISIBLE = 6;
+  const visible = showAll ? ranked : ranked.slice(0, VISIBLE);
+  const hiddenCount = ranked.length - VISIBLE;
 
   return (
     <div className="space-y-6">
@@ -47,7 +61,9 @@ function Workforce() {
       <div className="grid gap-4 lg:grid-cols-3">
         <Panel className="p-4">
           <p className="label-xs">Required capability</p>
-          <p className="mt-2 text-base font-semibold text-foreground">Precision Packaging Operation</p>
+          <p className="mt-2 text-base font-semibold text-foreground">
+            Precision Packaging Operation
+          </p>
           <p className="num mt-1 text-[11px] text-info">CAP-WPK-007</p>
           <div className="mt-4 space-y-1.5">
             <p className="label-xs">Required skills</p>
@@ -65,13 +81,18 @@ function Workforce() {
           <p className="mt-2 text-xs text-muted-foreground">
             of {workforce.length} modelled capability records meet the 70% compatibility floor.
           </p>
-          <Meter value={(deployable.length / workforce.length) * 100} tone="success" className="mt-4" />
+          <Meter
+            value={(deployable.length / workforce.length) * 100}
+            tone="success"
+            className="mt-4"
+          />
         </Panel>
         <Panel className="p-4">
           <p className="label-xs">Average training gap</p>
           <p className="num mt-2 text-4xl font-semibold text-warning">9%</p>
           <p className="mt-2 text-xs text-muted-foreground">
-            Closable in 12–18 hours of targeted training per operator, inside the 72-hour impact horizon.
+            Closable in 12–18 hours of targeted training per operator, inside the 72-hour impact
+            horizon.
           </p>
           <Meter value={91} tone="warning" className="mt-4" />
         </Panel>
@@ -84,13 +105,19 @@ function Workforce() {
           icon={<Users className="size-4" />}
         />
         <div className="divide-y divide-border">
-          {ranked.map((w) => (
+          {visible.map((w) => (
             <div key={w.id} className="grid gap-4 p-4 lg:grid-cols-[220px_minmax(0,1fr)_260px]">
               <div>
                 <div className="flex items-center gap-2">
                   <span className="num text-sm font-semibold text-foreground">{w.id}</span>
                   <StatusPill
-                    tone={w.compatibility >= 80 ? "success" : w.compatibility >= 70 ? "warning" : "critical"}
+                    tone={
+                      w.compatibility >= 80
+                        ? "success"
+                        : w.compatibility >= 70
+                          ? "warning"
+                          : "critical"
+                    }
                     dot={false}
                   >
                     {w.compatibility}% match
@@ -120,7 +147,9 @@ function Workforce() {
               <div className="panel-inset px-3 py-2">
                 <div className="flex items-baseline justify-between">
                   <span className="label-xs">Training gap</span>
-                  <span className="num text-xs text-warning">{Math.max(0, 100 - w.compatibility - 4)}%</span>
+                  <span className="num text-xs text-warning">
+                    {Math.max(0, 100 - w.compatibility - 4)}%
+                  </span>
                 </div>
                 <div className="mt-1.5 flex items-baseline justify-between">
                   <span className="label-xs">Estimated training</span>
@@ -139,9 +168,20 @@ function Workforce() {
           ))}
         </div>
         <p className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
-          Workforce is treated as a supply-chain resilience resource: a skill profile that can contribute to a lost
-          capability, not a job requisition.
+          Workforce is treated as a supply-chain resilience resource: a skill profile that can
+          contribute to a lost capability, not a job requisition.
         </p>
+        {!showAll && hiddenCount > 0 ? (
+          <div className="border-t border-border p-3 text-center">
+            <button
+              type="button"
+              onClick={() => setShowAll(true)}
+              className="inline-flex items-center gap-1.5 rounded-sm border border-border-strong bg-surface-2 px-3 py-1.5 font-mono text-[11px] tracking-[0.08em] text-muted-foreground uppercase transition-colors hover:text-foreground"
+            >
+              Show {hiddenCount} more candidates <ChevronDown className="size-3.5" />
+            </button>
+          </div>
+        ) : null}
       </Panel>
     </div>
   );

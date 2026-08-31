@@ -12,4 +12,9 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    // Stable local dev port so `npm run dev` always serves on http://localhost:8000.
+    // Lovable's sandbox passes its own port flags, which override this.
+    server: { port: 8000 },
+  },
 });

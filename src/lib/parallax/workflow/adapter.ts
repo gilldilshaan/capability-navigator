@@ -80,7 +80,7 @@ export async function createWorkflowFromDisruption(
     const merged = { ...activeDisruption, ...disruptionInput, id: disruptionId };
     disruptionToRun = disruptionSchema.parse(merged);
   } else {
-    disruptionToRun = { ...activeDisruption, id: disruptionId };
+    disruptionToRun = disruptionSchema.parse({ ...activeDisruption, id: disruptionId });
   }
 
   const result = await runParallaxWorkflow(disruptionToRun);

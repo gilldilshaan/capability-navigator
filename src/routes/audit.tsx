@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, ScrollText, XCircle } from "lucide-react";
 
+import { RecommendationCard } from "@/components/parallax/RecommendationCard";
 import {
   DemoTag,
   PageHeader,
@@ -8,7 +9,7 @@ import {
   PanelHeader,
   StatusPill,
 } from "@/components/parallax/primitives";
-import { useParallax } from "@/lib/parallax/store";
+import { scorePath, useParallax } from "@/lib/parallax/store";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/audit")({
@@ -40,9 +41,13 @@ function Audit() {
     recommendedPathId,
     activity,
     approving,
+    paths,
   } = useParallax();
 
   const decided = recoveryStatus === "APPROVED" || recoveryStatus === "REJECTED";
+  const recommendedPath = paths.find((p) => p.id === recommendedPathId) ?? null;
+  const pending =
+    recoveryStatus === "AWAITING APPROVAL" || recoveryStatus === "ALTERNATIVE REQUESTED";
 
   return (
     <div className="space-y-6">
@@ -69,6 +74,20 @@ function Audit() {
           </>
         }
       />
+
+      {pending && recommendedPath ? (
+        <RecommendationCard
+          title={`Path ${recommendedPath.id} — ${recommendedPath.title}`}
+          confidence={scorePath(recommendedPath)}
+          reasoning={recommendedPath.rationale}
+          benefits={[
+            `Capacity coverage ${recommendedPath.capacityCoveragePct}%`,
+            `Recovery time ${recommendedPath.recoveryDays} days · cost ₹${recommendedPath.costLakh}L`,
+          ]}
+          risks={[recommendedPath.compliance, recommendedPath.dependencyConcentration]}
+          requiresHumanApproval
+        />
+      ) : null}
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
         <Panel>

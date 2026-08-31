@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, GitBranch, Info } from "lucide-react";
+import { useState } from "react";
 
+import { CapabilityTree } from "@/components/parallax/CapabilityTree";
 import { NetworkGraph } from "@/components/parallax/NetworkGraph";
 import {
   DemoTag,
@@ -8,8 +10,8 @@ import {
   Panel,
   PanelHeader,
   StatusPill,
-  toneFor,
 } from "@/components/parallax/primitives";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useParallax } from "@/lib/parallax/store";
 import { cn } from "@/lib/utils";
 
@@ -34,6 +36,14 @@ export const Route = createFileRoute("/capability-map")({
 
 function CapabilityMap() {
   const { capabilityIdentified, decomposition, capabilityRegister } = useParallax();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const selectedNode = decomposition.find((n) => n.id === selectedId) ?? null;
+  const selectedAssets = selectedNode
+    ? selectedNode.provider
+        .split("/")
+        .map((a) => a.trim())
+        .filter(Boolean)
+    : [];
 
   return (
     <div className="space-y-6">
@@ -70,29 +80,50 @@ function CapabilityMap() {
             <span className="num text-[11px] text-warning">Redundancy 1x · target 3x</span>
           </div>
 
-          <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-            {decomposition.map((n, i) => (
-              <div
-                key={n.id}
-                className={cn(
-                  "rise-in panel-inset relative p-3",
-                  toneFor(n.status) === "critical" && "border-critical/40",
-                  toneFor(n.status) === "warning" && "border-warning/40",
-                )}
-                style={{ animationDelay: `${i * 45}ms` }}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <p className="text-[13px] font-medium text-foreground">{n.label}</p>
-                  <StatusPill>{n.status}</StatusPill>
-                </div>
-                <p className="num mt-2 text-[10px] text-muted-foreground">{n.id}</p>
-                <p className="mt-1.5 text-xs text-muted-foreground">{n.provider}</p>
-                <p className="num mt-2 text-[10px] text-muted-foreground">
-                  {n.dependencies} downstream dependenc{n.dependencies === 1 ? "y" : "ies"}
-                </p>
+          <CapabilityTree
+            rootId="CAP-THS-017"
+            rootName="ThermoShield Packaging"
+            rootMeta="7 required sub-capabilities"
+            nodes={decomposition}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+          />
+
+          {/* Selected node details — progressive disclosure */}
+          {selectedNode ? (
+            <div className="rise-in panel-inset border-info/30 mt-1 p-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="label-xs">Dependency details</p>
+                <span className="text-[13px] font-semibold text-foreground">
+                  {selectedNode.label}
+                </span>
+                <span className="num text-[11px] text-info">{selectedNode.id}</span>
+                <StatusPill dot={false}>{selectedNode.status}</StatusPill>
               </div>
-            ))}
-          </div>
+              <div className="mt-3 grid gap-4 sm:grid-cols-3">
+                <div>
+                  <p className="label-xs mb-1">Resources</p>
+                  <p className="num text-sm text-foreground">
+                    {Math.max(1, selectedAssets.length)}
+                  </p>
+                </div>
+                <div>
+                  <p className="label-xs mb-1">Downstream dependencies</p>
+                  <p className="num text-sm text-foreground">{selectedNode.dependencies}</p>
+                </div>
+                <div>
+                  <p className="label-xs mb-1">Contributing assets</p>
+                  <p className="text-xs text-foreground/85">{selectedAssets.join(" · ")}</p>
+                </div>
+              </div>
+              <Link
+                to="/resources"
+                className="mt-3 inline-flex items-center gap-1.5 font-mono text-[11px] tracking-[0.08em] text-ai uppercase hover:underline"
+              >
+                Trace dependencies <ArrowRight className="size-3.5" />
+              </Link>
+            </div>
+          ) : null}
         </div>
         <div className="flex flex-wrap items-center gap-3 border-t border-border px-4 py-3">
           <Info className="size-4 text-info" />
@@ -119,62 +150,76 @@ function CapabilityMap() {
         </div>
       </Panel>
 
-      <Panel>
-        <PanelHeader
-          title="Capability register"
-          subtitle={`${capabilityRegister.length} modelled capabilities with redundancy against target`}
-        />
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[720px] text-left">
-            <thead>
-              <tr className="border-b border-border">
-                {[
-                  "Capability ID",
-                  "Name",
-                  "Owner",
-                  "Requires",
-                  "Redundancy",
-                  "Target",
-                  "Status",
-                ].map((h) => (
-                  <th key={h} className="label-xs px-4 py-2.5 font-normal">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {capabilityRegister.map((c) => (
-                <tr
-                  key={c.id}
-                  className="border-b border-border/60 last:border-0 hover:bg-surface-2/60"
-                >
-                  <td className="num px-4 py-2.5 text-xs text-info">{c.id}</td>
-                  <td className="px-4 py-2.5 text-xs text-foreground">{c.name}</td>
-                  <td className="px-4 py-2.5 text-xs text-muted-foreground">{c.owner}</td>
-                  <td className="num px-4 py-2.5 text-xs text-muted-foreground">
-                    {c.requirements.length}
-                  </td>
-                  <td
-                    className={cn(
-                      "num px-4 py-2.5 text-xs",
-                      c.redundancy < c.targetRedundancy ? "text-critical" : "text-success",
-                    )}
-                  >
-                    {c.redundancy}x
-                  </td>
-                  <td className="num px-4 py-2.5 text-xs text-muted-foreground">
-                    {c.targetRedundancy}x
-                  </td>
-                  <td className="px-4 py-2.5">
-                    <StatusPill>{c.status}</StatusPill>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Panel>
+      <Collapsible defaultOpen={false}>
+        <Panel>
+          <div className="flex items-start justify-between gap-4 border-b border-border px-4 py-3">
+            <div>
+              <h2 className="text-[13px] font-semibold tracking-[0.02em] text-foreground uppercase">
+                Capability register
+              </h2>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {capabilityRegister.length} modelled capabilities with redundancy against target —
+                secondary to the graph view.
+              </p>
+            </div>
+            <CollapsibleTrigger className="shrink-0 rounded-sm border border-border-strong bg-surface-2 px-2.5 py-1.5 font-mono text-[11px] tracking-[0.08em] text-muted-foreground uppercase transition-colors hover:text-foreground">
+              Show / hide
+            </CollapsibleTrigger>
+          </div>
+          <CollapsibleContent>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[720px] text-left">
+                <thead>
+                  <tr className="border-b border-border">
+                    {[
+                      "Capability ID",
+                      "Name",
+                      "Owner",
+                      "Requires",
+                      "Redundancy",
+                      "Target",
+                      "Status",
+                    ].map((h) => (
+                      <th key={h} className="label-xs px-4 py-2.5 font-normal">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {capabilityRegister.map((c) => (
+                    <tr
+                      key={c.id}
+                      className="border-b border-border/60 last:border-0 hover:bg-surface-2/60"
+                    >
+                      <td className="num px-4 py-2.5 text-xs text-info">{c.id}</td>
+                      <td className="px-4 py-2.5 text-xs text-foreground">{c.name}</td>
+                      <td className="px-4 py-2.5 text-xs text-muted-foreground">{c.owner}</td>
+                      <td className="num px-4 py-2.5 text-xs text-muted-foreground">
+                        {c.requirements.length}
+                      </td>
+                      <td
+                        className={cn(
+                          "num px-4 py-2.5 text-xs",
+                          c.redundancy < c.targetRedundancy ? "text-critical" : "text-success",
+                        )}
+                      >
+                        {c.redundancy}x
+                      </td>
+                      <td className="num px-4 py-2.5 text-xs text-muted-foreground">
+                        {c.targetRedundancy}x
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <StatusPill>{c.status}</StatusPill>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CollapsibleContent>
+        </Panel>
+      </Collapsible>
     </div>
   );
 }
