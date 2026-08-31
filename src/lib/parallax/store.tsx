@@ -14,28 +14,46 @@ import {
   activeDisruption,
   agentDefs,
   capabilities,
+  factories,
   hiddenDependencies,
+  inventory,
+  logisticsRoutes,
+  machines,
   recoveryPaths,
+  suppliers,
   thermoShieldDecomposition,
   user,
+  workforce,
 } from "./data";
 import * as agentService from "@/services/agentService";
 import * as disruptionService from "@/services/disruptionService";
 import * as graphService from "@/services/graphService";
+import * as masterService from "@/services/masterService";
 import * as recoveryService from "@/services/recoveryService";
 import * as simulationService from "@/services/simulationService";
-import { apiConfig, getLastFallbackReason, type ApiSource } from "@/services";
+import {
+  apiConfig,
+  getLastFallbackReason,
+  type ApiSource,
+  type HealthStatus,
+} from "@/services";
 import type {
   AgentWorkflow,
   ApprovalDecisionType,
   Capability,
   Disruption,
   DisruptionSeverity,
+  Factory,
   GraphAnalysisResult,
   HiddenDependency,
+  InventoryItem,
+  LogisticsRoute,
+  Machine,
   RecoveryPath,
   ResourceKind,
   SimulationResult,
+  Supplier,
+  WorkforceRecord,
 } from "@/types/parallax";
 
 export type AgentStatus = "QUEUED" | "RUNNING" | "COMPLETE" | "FAILED";
@@ -89,6 +107,8 @@ interface ParallaxState {
   dataSource: ApiSource | null;
   /** Non-blocking banner state for backend problems. */
   backendNotice: BackendNotice | null;
+  /** True once the on-mount backend hydration pass has settled (live or mock). */
+  hydrated: boolean;
   agents: AgentState[];
   activity: ActivityEntry[];
   audit: AuditEntry[];
@@ -109,6 +129,15 @@ interface ParallaxState {
   readiness: number;
   capabilityRegister: Capability[];
   decomposition: typeof thermoShieldDecomposition;
+  /* master data (hydrated from Bani /api/*) */
+  suppliers: Supplier[];
+  factories: Factory[];
+  machines: Machine[];
+  inventory: InventoryItem[];
+  workforce: WorkforceRecord[];
+  logisticsRoutes: LogisticsRoute[];
+  capabilities: Capability[];
+  healthStatus: HealthStatus | null;
   /* chaos */
   chaosToggles: string[];
   chaosRunning: boolean;
@@ -211,6 +240,15 @@ const initialState: ParallaxState = {
   readiness: 92,
   capabilityRegister: capabilities,
   decomposition: thermoShieldDecomposition,
+  suppliers,
+  factories,
+  machines,
+  inventory,
+  workforce,
+  logisticsRoutes,
+  capabilities,
+  healthStatus: null,
+  hydrated: false,
   chaosToggles: [],
   chaosRunning: false,
   chaosProgress: 0,
@@ -316,6 +354,88 @@ export function ParallaxProvider({ children }: { children: ReactNode }) {
     patch({ incidentOpen: true });
     navigate({ to: "/disruptions" });
   }, [navigate, patch]);
+
+  /* ------------------------------------------------------------------ */
+  /* Master data + active disruption hydration — runs once on mount.     */
+  /* Live responses replace the mock seed; failures degrade to mock and  */
+  /* the standard backendNotice banner explains why. No disruption is    */
+  /* ever injected here — we only read.                                  */
+  /* ------------------------------------------------------------------ */
+
+  const hydrateFromBackend = useCallback(async () => {
+    try {
+      const [
+        suppliersEnv,
+        factoriesEnv,
+        machinesEnv,
+        inventoryEnv,
+        workforceEnv,
+        routesEnv,
+        capsEnv,
+        activeEnv,
+        healthEnv,
+      ] = await Promise.all([
+        masterService.getSuppliers(),
+        masterService.getFactories(),
+        masterService.getMachines(),
+        masterService.getInventory(),
+        masterService.getWorkforce(),
+        masterService.getLogisticsRoutes(),
+        masterService.getCapabilities(),
+        disruptionService.getActiveDisruptions(),
+        masterService.getHealth(),
+      ]);
+
+      const sources = [
+        suppliersEnv,
+        factoriesEnv,
+        machinesEnv,
+        inventoryEnv,
+        workforceEnv,
+        routesEnv,
+        capsEnv,
+        activeEnv,
+      ].map((envelope) => envelope.source);
+      const anyLive = sources.includes("live");
+      const activeLive = activeEnv.source === "live";
+
+      setState((s) => ({
+        ...s,
+        suppliers: suppliersEnv.data,
+        factories: factoriesEnv.data,
+        machines: machinesEnv.data,
+        inventory: inventoryEnv.data,
+        workforce: workforceEnv.data,
+        logisticsRoutes: routesEnv.data,
+        capabilities: capsEnv.data,
+        capabilityRegister: capsEnv.data,
+        ...(activeLive && activeEnv.data.length > 0
+          ? {
+              activeDisruptions: activeEnv.data.length,
+              incident: activeEnv.data[0]!,
+            }
+          : {}),
+        healthStatus: healthEnv.source === "live" ? healthEnv.data : s.healthStatus,
+        ...(anyLive ? { dataSource: "live" as ApiSource, backendNotice: null } : {}),
+        ...(!anyLive && !apiConfig.demoMode ? { backendNotice: mockNotice() } : {}),
+        hydrated: true,
+      }));
+    } catch (error) {
+      /* Fallback disabled or unexpected failure — show a clean error. */
+      setState((s) => ({
+        ...s,
+        backendNotice: {
+          tone: "critical",
+          message: `Could not load master data: ${errorMessage(error)}`,
+        },
+        hydrated: true,
+      }));
+    }
+  }, []);
+
+  useEffect(() => {
+    void hydrateFromBackend();
+  }, [hydrateFromBackend]);
 
   /* ------------------------------------------------------------------ */
   /* Analysis pipeline: disruption → graph → agents → recovery paths.   */

@@ -66,5 +66,7 @@ export const apiConfig = {
     recovery: urlFor("VITE_API_RECOVERY_URL", "/api/recovery"),
     simulation: urlFor("VITE_API_SIMULATION_URL", "/api/simulation"),
     agents: urlFor("VITE_API_AGENTS_URL", "/api/agents"),
+    master: urlFor("VITE_API_MASTER_URL", "/api"),
+    health: urlFor("VITE_API_HEALTH_URL", "/api/health"),
   },
 } as const;

@@ -66,7 +66,7 @@ function Overview() {
         <KpiCard
           label="Active disruptions"
           value={String(activeDisruptions).padStart(2, "0")}
-          note={activeDisruptions ? "1 critical · INC-2048" : "No open incidents"}
+          note={activeDisruptions ? `1 critical · ${incident.id}` : "No open incidents"}
           tone={activeDisruptions ? "critical" : "success"}
           large={presentation}
         />

@@ -20,7 +20,12 @@ export {
 } from "./api";
 
 export * from "./disruptionService";
-export * from "./graphService";
+export {
+  analyzeGraph,
+  getCapabilityNetwork,
+  type AnalyzeGraphParams,
+} from "./graphService";
+export * from "./masterService";
 export * from "./recoveryService";
 export * from "./simulationService";
 export * from "./agentService";

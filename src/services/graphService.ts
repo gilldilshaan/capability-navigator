@@ -112,10 +112,16 @@ export function analyzeGraph(
   });
 }
 
+/**
+ * Capability register (master data). The live source is Bani's master
+ * endpoint GET /api/capabilities — not the graph engine's
+ * /api/graph/capabilities, which is not implemented and is not a
+ * master-data source.
+ */
 export function getCapabilities(): Promise<ApiEnvelope<Capability[]>> {
   return withFallback<Capability[]>({
     label: "capability register",
-    live: () => get<Capability[]>(`${apiConfig.urls.graph()}/capabilities`),
+    live: () => get<Capability[]>(`${apiConfig.urls.master()}/capabilities`),
     mock: () => capabilities,
   });
 }

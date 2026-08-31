@@ -35,3 +35,8 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+
+# Backend (Bani) — generated SQLite database
+server/data/*.db
+server/data/*.db-wal
+server/data/*.db-shm

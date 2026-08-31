@@ -12,14 +12,6 @@ import {
   StatusPill,
 } from "@/components/parallax/primitives";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import {
-  factories,
-  inventory,
-  logisticsRoutes,
-  machines,
-  suppliers,
-  workforce,
-} from "@/lib/parallax/data";
 import { useParallax } from "@/lib/parallax/store";
 import type { ResourceKind } from "@/types/parallax";
 
@@ -105,7 +97,8 @@ function ResourceRow({
 
 function Resources() {
   const [detail, setDetail] = useState<Detail | null>(null);
-  const { injectDisruption, analysis } = useParallax();
+  const { injectDisruption, analysis, suppliers, factories, machines, inventory, workforce, logisticsRoutes } =
+    useParallax();
   const transferable = workforce.filter((w) => w.compatibility >= 70);
 
   return (

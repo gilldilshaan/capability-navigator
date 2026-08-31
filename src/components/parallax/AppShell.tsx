@@ -22,6 +22,7 @@ import { SystemStatusBanner } from "@/components/parallax/SystemStatusBanner";
 import { StatusPill } from "@/components/parallax/primitives";
 import { useParallax } from "@/lib/parallax/store";
 import { user } from "@/lib/parallax/data";
+import { apiConfig } from "@/services";
 import { cn } from "@/lib/utils";
 
 const nav = [
@@ -98,15 +99,24 @@ export function AppShell({ children }: { children: ReactNode }) {
     demoStep,
     activeDisruptions,
     recoveryStatus,
+    healthStatus,
+    dataSource,
+    hydrated,
   } = useParallax();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
-  const networkStatus =
-    recoveryStatus === "APPROVED"
+  /** True once a live backend response has been received (health and/or data). */
+  const backendLive = healthStatus !== null || dataSource === "live";
+
+  const networkStatus = apiConfig.demoMode
+    ? "Demo"
+    : recoveryStatus === "APPROVED" && backendLive
       ? "Recovering"
-      : activeDisruptions > 0
-        ? "Degraded"
-        : "Operational";
+      : !hydrated
+        ? "Connecting"
+        : backendLive
+          ? "Operational"
+          : "Degraded";
 
   return (
     <div className="min-h-screen bg-background">
@@ -119,7 +129,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               tone={
                 networkStatus === "Operational"
                   ? "success"
-                  : networkStatus === "Recovering"
+                  : networkStatus === "Recovering" || networkStatus === "Connecting"
                     ? "info"
                     : "warning"
               }
@@ -127,7 +137,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               {networkStatus}
             </StatusPill>
             <span className="ml-2 rounded-sm border border-border bg-surface px-1.5 py-0.5 font-mono text-[10px] tracking-[0.08em] text-muted-foreground uppercase">
-              Demo environment
+              {backendLive && !apiConfig.demoMode ? "Live data" : "Demo environment"}
             </span>
           </div>
 
