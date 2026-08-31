@@ -47,8 +47,9 @@ export async function getWorkflowApi(
   }
 
   // Fallback compatibility
+  const disruptionId = workflowId.replace(/^(wf-|WF-)/, "") || activeDisruption.id;
   const fallback = await createWorkflowFromDisruption({
-    disruptionId: activeDisruption.id,
+    disruptionId,
   });
   return fallback;
 }

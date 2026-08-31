@@ -12,7 +12,10 @@
  *                                  (default true; set "false" to surface errors instead)
  */
 
-const env = import.meta.env;
+const env =
+  typeof import.meta !== "undefined" && import.meta.env
+    ? import.meta.env
+    : (process.env as unknown as Record<string, string>) || {};
 
 const bool = (value: unknown, fallback: boolean): boolean => {
   if (typeof value !== "string" || value === "") return fallback;
