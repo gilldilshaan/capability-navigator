@@ -1,0 +1,249 @@
+{
+  "nodes": [
+    {
+      "id": "SUP-001",
+      "name": "Global Silicon Ltd",
+      "type": "supplier",
+      "attributes": {
+        "location": "San Jose, CA",
+        "lead_time_days": 14
+      }
+    },
+    {
+      "id": "SUP-002",
+      "name": "Apex Metals Corp",
+      "type": "supplier",
+      "attributes": {
+        "location": "Pittsburgh, PA",
+        "lead_time_days": 7
+      }
+    },
+    {
+      "id": "SUP-003",
+      "name": "Polymer Tech International",
+      "type": "supplier",
+      "attributes": {
+        "location": "Houston, TX",
+        "lead_time_days": 10
+      }
+    },
+    {
+      "id": "MAT-001",
+      "name": "Silicon Wafers",
+      "type": "material",
+      "attributes": {
+        "unit": "crates",
+        "buffer_stock": 500
+      }
+    },
+    {
+      "id": "MAT-002",
+      "name": "Aerospace Aluminum Alloy",
+      "type": "material",
+      "attributes": {
+        "unit": "tons",
+        "buffer_stock": 120
+      }
+    },
+    {
+      "id": "MAT-003",
+      "name": "High-Grade Industrial Polymer",
+      "type": "material",
+      "attributes": {
+        "unit": "barrels",
+        "buffer_stock": 350
+      }
+    },
+    {
+      "id": "FAC-001",
+      "name": "Austin Microelectronics & Machining Plant",
+      "type": "factory",
+      "attributes": {
+        "location": "Austin, TX",
+        "status": "operational"
+      }
+    },
+    {
+      "id": "FAC-002",
+      "name": "Detroit Advanced Plastics Facility",
+      "type": "factory",
+      "attributes": {
+        "location": "Detroit, MI",
+        "status": "operational"
+      }
+    },
+    {
+      "id": "MAC-001",
+      "name": "5-Axis CNC Milling Center A",
+      "type": "machine",
+      "attributes": {
+        "model": "Haas VF-4",
+        "throughput_per_hr": 25
+      }
+    },
+    {
+      "id": "MAC-002",
+      "name": "5-Axis CNC Milling Center B",
+      "type": "machine",
+      "attributes": {
+        "model": "Hurco VMX42i",
+        "throughput_per_hr": 25
+      }
+    },
+    {
+      "id": "MAC-003",
+      "name": "High-Speed SMT Placement Station",
+      "type": "machine",
+      "attributes": {
+        "model": "Yamaha YSM20R",
+        "throughput_per_hr": 1200
+      }
+    },
+    {
+      "id": "MAC-004",
+      "name": "Heavy-Duty Injection Molding Press",
+      "type": "machine",
+      "attributes": {
+        "model": "Engel e-motion 740",
+        "throughput_per_hr": 80
+      }
+    },
+    {
+      "id": "WF-001",
+      "name": "Precision Machining Team",
+      "type": "workforce",
+      "attributes": {
+        "headcount": 12,
+        "shift": "day"
+      }
+    },
+    {
+      "id": "WF-002",
+      "name": "Electronics Assembly Specialists",
+      "type": "workforce",
+      "attributes": {
+        "headcount": 8,
+        "shift": "swing"
+      }
+    },
+    {
+      "id": "CAP-001",
+      "name": "Precision CNC Milling",
+      "type": "capability",
+      "attributes": {
+        "description": "Sub-millimeter CNC component milling"
+      }
+    },
+    {
+      "id": "CAP-002",
+      "name": "Surface Mount Circuit Assembly",
+      "type": "capability",
+      "attributes": {
+        "description": "High-density SMT PCB population and soldering"
+      }
+    },
+    {
+      "id": "CAP-003",
+      "name": "High-Pressure Injection Molding",
+      "type": "capability",
+      "attributes": {
+        "description": "Thermoplastic structural component injection"
+      }
+    },
+    {
+      "id": "CAP-004",
+      "name": "Precision Quality Metrology",
+      "type": "capability",
+      "attributes": {
+        "description": "Automated optical and coordinate measuring inspection"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "SUP-001",
+      "target": "MAT-001",
+      "relationship": "supplies"
+    },
+    {
+      "source": "SUP-002",
+      "target": "MAT-002",
+      "relationship": "supplies"
+    },
+    {
+      "source": "SUP-003",
+      "target": "MAT-003",
+      "relationship": "supplies"
+    },
+    {
+      "source": "MAT-001",
+      "target": "FAC-001",
+      "relationship": "delivered_to"
+    },
+    {
+      "source": "MAT-002",
+      "target": "FAC-001",
+      "relationship": "delivered_to"
+    },
+    {
+      "source": "MAT-003",
+      "target": "FAC-002",
+      "relationship": "delivered_to"
+    },
+    {
+      "source": "FAC-001",
+      "target": "MAC-001",
+      "relationship": "houses"
+    },
+    {
+      "source": "FAC-001",
+      "target": "MAC-002",
+      "relationship": "houses"
+    },
+    {
+      "source": "FAC-001",
+      "target": "MAC-003",
+      "relationship": "houses"
+    },
+    {
+      "source": "FAC-002",
+      "target": "MAC-004",
+      "relationship": "houses"
+    },
+    {
+      "source": "FAC-001",
+      "target": "WF-001",
+      "relationship": "employs"
+    },
+    {
+      "source": "FAC-001",
+      "target": "WF-002",
+      "relationship": "employs"
+    },
+    {
+      "source": "MAC-001",
+      "target": "CAP-001",
+      "relationship": "provides"
+    },
+    {
+      "source": "MAC-002",
+      "target": "CAP-001",
+      "relationship": "provides"
+    },
+    {
+      "source": "MAC-003",
+      "target": "CAP-002",
+      "relationship": "provides"
+    },
+    {
+      "source": "MAC-004",
+      "target": "CAP-003",
+      "relationship": "provides"
+    },
+    {
+      "source": "WF-001",
+      "target": "CAP-004",
+      "relationship": "provides"
+    }
+  ]
+}
