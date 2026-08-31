@@ -13,8 +13,6 @@ import {
   StatusPill,
 } from "@/components/parallax/primitives";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-<<<<<<< HEAD
-=======
 import {
   factories as fallbackFactories,
   inventory as fallbackInventory,
@@ -23,7 +21,6 @@ import {
   suppliers as fallbackSuppliers,
   workforce as fallbackWorkforce,
 } from "@/lib/parallax/data";
->>>>>>> integration-suvreen
 import { useParallax } from "@/lib/parallax/store";
 import { useSapResources } from "@/integrations/sap/useSapResources";
 import type { ResourceKind } from "@/types/parallax";
@@ -129,10 +126,6 @@ function ResourceRow({
 
 function Resources() {
   const [detail, setDetail] = useState<Detail | null>(null);
-<<<<<<< HEAD
-  const { injectDisruption, analysis, suppliers, factories, machines, inventory, workforce, logisticsRoutes } =
-    useParallax();
-=======
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const { injectDisruption, analysis } = useParallax();
@@ -176,7 +169,6 @@ function Resources() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [q],
   );
->>>>>>> integration-suvreen
   const transferable = workforce.filter((w) => w.compatibility >= 70);
 
   const total =
