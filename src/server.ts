@@ -2,7 +2,7 @@ import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
-import { handleWorkflowApiRequest } from "./lib/parallax/workflow/adapter";
+import { handleApiRequest } from "../server/src/api/router";
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -49,8 +49,9 @@ export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
       const url = new URL(request.url);
-      if (url.pathname.startsWith("/api/agents/workflows")) {
-        return await handleWorkflowApiRequest(request);
+      if (url.pathname.startsWith("/api/")) {
+        const apiRes = await handleApiRequest(request);
+        if (apiRes) return apiRes;
       }
 
       const handler = await getServerEntry();

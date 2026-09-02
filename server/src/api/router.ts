@@ -1,7 +1,11 @@
+import { agents } from "./agents";
 import { approvals } from "./approvals";
 import { disruptions } from "./disruptions";
+import { graph } from "./graph";
 import { health } from "./health";
 import { master } from "./master";
+import { recovery } from "./recovery";
+import { simulation } from "./simulation";
 
 /** API error carrying an HTTP status + machine-readable code. */
 export class HttpError extends Error {
@@ -49,12 +53,28 @@ export const routes: RouteDef[] = [
   { method: "GET", segments: ["api", "logistics-routes"], handler: master.logisticsRoutes },
   { method: "GET", segments: ["api", "capabilities"], handler: master.capabilities },
 
+  // Graph endpoints
+  { method: "POST", segments: ["api", "graph", "analyze"], handler: graph.analyze },
+  { method: "GET", segments: ["api", "graph", "capabilities"], handler: master.capabilities },
+  { method: "GET", segments: ["api", "graph", "network"], handler: graph.network },
+
+  // Disruptions endpoints
   { method: "POST", segments: ["api", "disruptions", "inject"], handler: disruptions.inject },
   { method: "GET", segments: ["api", "disruptions", "active"], handler: disruptions.active },
   { method: "GET", segments: ["api", "disruptions", ":id"], handler: disruptions.byId },
 
+  // Recovery & approvals endpoints
+  { method: "POST", segments: ["api", "recovery", "paths"], handler: recovery.paths },
   { method: "POST", segments: ["api", "recovery", "approvals"], handler: approvals.create },
   { method: "GET", segments: ["api", "recovery", "approvals", ":id"], handler: approvals.byId },
+
+  // Simulation endpoints
+  { method: "POST", segments: ["api", "simulation", "run"], handler: simulation.run },
+  { method: "GET", segments: ["api", "simulation", "failure-toggles"], handler: simulation.failureToggles },
+
+  // Agent workflow endpoints
+  { method: "POST", segments: ["api", "agents", "workflows"], handler: agents.create },
+  { method: "GET", segments: ["api", "agents", "workflows", ":id"], handler: agents.byId },
 ];
 
 export interface MatchedRoute {
@@ -84,4 +104,55 @@ export function match(method: string, pathname: string): MatchedRoute | null {
   }
 
   return null;
+}
+
+export async function handleApiRequest(request: Request): Promise<Response | null> {
+  const url = new URL(request.url);
+  const method = request.method.toUpperCase();
+  const matched = match(method, url.pathname);
+  if (!matched) return null;
+
+  let body: unknown = undefined;
+  if (method === "POST" || method === "PUT" || method === "PATCH") {
+    try {
+      const text = await request.text();
+      if (text.trim()) body = JSON.parse(text);
+    } catch {
+      return new Response(
+        JSON.stringify({ error: "INVALID_JSON", message: "Request body must be valid JSON." }),
+        {
+          status: 400,
+          headers: { "content-type": "application/json; charset=utf-8" },
+        },
+      );
+    }
+  }
+
+  try {
+    const { status, body: resBody } = await matched.handler({
+      params: matched.params,
+      body,
+    });
+    return new Response(JSON.stringify(resBody), {
+      status,
+      headers: {
+        "content-type": "application/json; charset=utf-8",
+        "access-control-allow-origin": "*",
+      },
+    });
+  } catch (error) {
+    if (error instanceof HttpError) {
+      return new Response(JSON.stringify({ error: error.code, message: error.message }), {
+        status: error.status,
+        headers: { "content-type": "application/json; charset=utf-8" },
+      });
+    }
+    return new Response(
+      JSON.stringify({ error: "INTERNAL_ERROR", message: "An unexpected error occurred." }),
+      {
+        status: 500,
+        headers: { "content-type": "application/json; charset=utf-8" },
+      },
+    );
+  }
 }

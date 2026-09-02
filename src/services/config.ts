@@ -27,7 +27,8 @@ const trimmed = (value: unknown): string | undefined => {
   return v ? v.replace(/\/+$/, "") : undefined;
 };
 
-const BASE_URL = trimmed(env["VITE_API_BASE_URL"]);
+const RAW_BASE_URL = trimmed(env["VITE_API_BASE_URL"]);
+const BASE_URL = RAW_BASE_URL ?? "";
 const MOCK_MODE = bool(env["VITE_API_MOCK_MODE"], false);
 const FALLBACK_TO_MOCK = bool(env["VITE_API_FALLBACK_TO_MOCK"], true);
 const TIMEOUT_MS = Number(env["VITE_API_TIMEOUT_MS"] ?? 15000) || 15000;
@@ -46,7 +47,7 @@ const urlFor =
   (overrideKey: string, defaultPath: string) =>
   (override?: string): string =>
     serviceUrl({
-      baseUrl: BASE_URL ?? "",
+      baseUrl: BASE_URL,
       path: override ?? trimmed(env[overrideKey]) ?? defaultPath,
     });
 
@@ -61,7 +62,7 @@ export const apiConfig = {
   timeoutMs: TIMEOUT_MS,
   /** True when the app is intentionally running without a backend. */
   get demoMode(): boolean {
-    return !BASE_URL || MOCK_MODE;
+    return MOCK_MODE;
   },
   urls: {
     disruptions: urlFor("VITE_API_DISRUPTIONS_URL", "/api/disruptions"),
