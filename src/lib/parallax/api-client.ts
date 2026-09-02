@@ -1,14 +1,12 @@
 import { activeDisruption } from "./data";
-import {
-  createWorkflowFromDisruption,
-  type AgentWorkflow,
-} from "./workflow/adapter";
+import { createWorkflowFromDisruption, type AgentWorkflow } from "./workflow/adapter";
+import { apiConfig } from "@/services";
 
 export async function postWorkflowApi(
   disruptionId: string = activeDisruption.id,
 ): Promise<AgentWorkflow> {
   try {
-    const response = await fetch("/api/agents/workflows", {
+    const response = await fetch(`${apiConfig.urls.agents()}/workflows`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ disruptionId }),
@@ -19,7 +17,7 @@ export async function postWorkflowApi(
     }
   } catch (error) {
     console.warn(
-      "API request to /api/agents/workflows failed, falling back to direct server orchestrator execution:",
+      `API request to ${apiConfig.urls.agents()}/workflows failed, falling back to direct server orchestrator execution:`,
       error,
     );
   }
@@ -28,12 +26,10 @@ export async function postWorkflowApi(
   return createWorkflowFromDisruption({ disruptionId });
 }
 
-export async function getWorkflowApi(
-  workflowId: string,
-): Promise<AgentWorkflow> {
+export async function getWorkflowApi(workflowId: string): Promise<AgentWorkflow> {
   try {
     const response = await fetch(
-      `/api/agents/workflows/${encodeURIComponent(workflowId)}`,
+      `${apiConfig.urls.agents()}/workflows/${encodeURIComponent(workflowId)}`,
     );
     if (response.ok) {
       const data = (await response.json()) as AgentWorkflow;
@@ -41,7 +37,7 @@ export async function getWorkflowApi(
     }
   } catch (error) {
     console.warn(
-      `API request to /api/agents/workflows/${workflowId} failed, falling back to direct server orchestrator execution:`,
+      `API request to ${apiConfig.urls.agents()}/workflows/${workflowId} failed, falling back to direct server orchestrator execution:`,
       error,
     );
   }
