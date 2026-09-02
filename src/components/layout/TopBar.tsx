@@ -2,10 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { Maximize2, Minimize2, Play, RotateCcw, Square } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { StatusPill } from "@/components/parallax/primitives";
 import { useParallax } from "@/lib/parallax/store";
 import { user } from "@/lib/parallax/data";
-import { apiConfig } from "@/services";
 import { cn } from "@/lib/utils";
 
 function Wordmark() {
@@ -69,54 +67,12 @@ export function TopBar() {
     demoRunning,
     demoLabel,
     demoStep,
-    activeDisruptions,
-    recoveryStatus,
-    dataSource,
   } = useParallax();
-
-  const networkStatus =
-    recoveryStatus === "APPROVED"
-      ? "Recovering"
-      : activeDisruptions > 0
-        ? "Degraded"
-        : "Operational";
-
-  const dataSourceLabel = apiConfig.demoMode
-    ? "Demo data"
-    : dataSource === "live"
-      ? "Live API"
-      : dataSource === "mock"
-        ? "Demo fallback"
-        : "Awaiting sync";
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/92 backdrop-blur">
       <div className="flex h-14 items-center gap-5 px-5">
         <Wordmark />
-        <div className="hidden items-center gap-2 lg:flex">
-          <span className="h-5 w-px bg-border" aria-hidden />
-          <StatusPill
-            tone={
-              networkStatus === "Operational"
-                ? "success"
-                : networkStatus === "Recovering"
-                  ? "info"
-                  : "warning"
-            }
-          >
-            {networkStatus}
-          </StatusPill>
-          <span className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.08em] text-muted-foreground uppercase">
-            <span
-              className={cn(
-                "inline-flex size-1.5 rounded-full breath",
-                apiConfig.demoMode ? "bg-warning" : "bg-success",
-              )}
-            />
-            {apiConfig.demoMode ? "Demo" : "Live"} · {dataSourceLabel}
-          </span>
-        </div>
-
         <div className="ml-auto flex items-center gap-2">
           {demoRunning ? (
             <span className="hidden items-center gap-2 rounded-sm border border-ai/40 bg-ai/10 px-2.5 py-1.5 md:inline-flex">

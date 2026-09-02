@@ -11,9 +11,7 @@ import {
   Zap,
 } from "lucide-react";
 
-import { ResilienceGauge } from "@/components/parallax/ResilienceGauge";
 import { useParallax } from "@/lib/parallax/store";
-import { apiConfig } from "@/services";
 import { cn } from "@/lib/utils";
 
 const navGroups: {
@@ -44,23 +42,10 @@ const navGroups: {
   },
 ];
 
-/** Left navigation — Command Center / Intelligence / System grouping + live status footer. */
+/** Left navigation — Command Center / Intelligence / System grouping. */
 export function Sidebar() {
-  const { activeDisruptions, recoveryStatus, resilience, dataSource } = useParallax();
+  const { activeDisruptions } = useParallax();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-
-  const networkStatus =
-    recoveryStatus === "APPROVED"
-      ? "Recovering"
-      : activeDisruptions > 0
-        ? "Degraded"
-        : "Operational";
-
-  const dataSourceLabel = apiConfig.demoMode
-    ? "Demo data"
-    : dataSource === "live"
-      ? "Live API"
-      : "Demo fallback";
 
   return (
     <nav className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-[220px] shrink-0 flex-col border-r border-border bg-sidebar px-2.5 py-4 lg:flex">
@@ -106,34 +91,6 @@ export function Sidebar() {
       ))}
 
       <div className="mt-auto space-y-3 px-2">
-        <div className="panel-inset px-3 py-2.5">
-          <p className="label-xs mb-2">System status</p>
-          <div className="flex items-center justify-between gap-2">
-            <div className="min-w-0">
-              <p className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-                <span
-                  className={cn(
-                    "inline-flex size-1.5 rounded-full",
-                    networkStatus === "Operational"
-                      ? "bg-success"
-                      : networkStatus === "Recovering"
-                        ? "bg-info"
-                        : "bg-warning",
-                  )}
-                />
-                Network {networkStatus.toLowerCase()}
-              </p>
-              <p className="num mt-1 text-[10px] text-muted-foreground">
-                {dataSourceLabel} · resilience {resilience}/100
-              </p>
-            </div>
-            <ResilienceGauge
-              value={resilience}
-              size={40}
-              tone={resilience >= 85 ? "success" : "warning"}
-            />
-          </div>
-        </div>
         <p className="label-xs">Doctrine</p>
         <p className="text-xs leading-relaxed text-muted-foreground">
           Don&apos;t replace the broken link. Reconstruct the capability.
