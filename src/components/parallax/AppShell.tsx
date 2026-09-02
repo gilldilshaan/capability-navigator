@@ -40,7 +40,6 @@ export function AppShell({ children }: { children: ReactNode }) {
     presentation,
     setPresentation,
     startDemo,
-    nextDemoStep,
     demoTotalSteps,
     stopDemo,
     resetDemo,
@@ -57,8 +56,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     select: (s) => s.location.pathname,
   });
 
-  const backendLive =
-    healthStatus !== null || dataSource === "live";
+  const backendLive = healthStatus !== null || dataSource === "live";
 
   const networkStatus = apiConfig.demoMode
     ? "Demo"
@@ -79,9 +77,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="flex">
         <Sidebar />
 
-        <main className="min-w-0 flex-1 px-5 py-6">
-          {children}
-        </main>
+        <main className="min-w-0 flex-1 px-5 py-6">{children}</main>
 
         <ActivityRail />
       </div>

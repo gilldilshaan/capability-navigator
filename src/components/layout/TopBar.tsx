@@ -63,7 +63,6 @@ export function TopBar() {
     presentation,
     setPresentation,
     startDemo,
-    nextDemoStep,
     demoTotalSteps,
     stopDemo,
     resetDemo,
@@ -130,13 +129,6 @@ export function TopBar() {
           ) : null}
           {demoRunning ? (
             <>
-              <TopBarButton
-                onClick={nextDemoStep}
-                icon={<Play className="size-3.5" />}
-                tone="primary"
-              >
-                {demoStep >= demoTotalSteps ? "Finish" : "Next step"}
-              </TopBarButton>
               <TopBarButton onClick={stopDemo} icon={<Square className="size-3.5" />} tone="danger">
                 Stop
               </TopBarButton>

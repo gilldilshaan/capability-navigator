@@ -43,7 +43,6 @@ function Disruptions() {
     analysisProgress,
     agents,
     capabilityIdentified,
-    runAnalysis,
     activeDisruptions,
     recoveryStatus,
     pathsGenerated,
@@ -95,18 +94,12 @@ function Disruptions() {
           <>
             {analysis === "running" ? (
               <StatusPill tone="warning">{pipelineStage || "Running"}</StatusPill>
+            ) : analysis === "complete" ? (
+              <StatusPill tone="success">Analysis complete</StatusPill>
+            ) : analysis === "error" ? (
+              <StatusPill tone="critical">Analysis failed</StatusPill>
             ) : (
-              <button
-                type="button"
-                onClick={runAnalysis}
-                className="rounded-sm border border-ai/50 bg-ai/12 px-3 py-1.5 font-mono text-[11px] tracking-[0.1em] text-ai uppercase transition-colors hover:bg-ai/22"
-              >
-                {analysis === "complete"
-                  ? "Re-run analysis"
-                  : analysis === "error"
-                    ? "Retry analysis"
-                    : "Run analysis"}
-              </button>
+              <StatusPill tone="info">Analyzing</StatusPill>
             )}
             <StatusPill tone="critical">{incident.severity}</StatusPill>
             <DemoTag />

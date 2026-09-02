@@ -42,7 +42,6 @@ function RecoveryPaths() {
     recommendedPathId,
     selectedPathId,
     selectPath,
-    runAnalysis,
     analysis,
     pipelineStage,
     approveRecovery,
@@ -82,17 +81,15 @@ function RecoveryPaths() {
       {!pathsGenerated ? (
         <EmptyState
           icon={<RouteIcon className="size-6" />}
-          title="No recovery paths generated yet."
-          description="The reconstruction agent generates alternative capability configurations once the disruption analysis has run."
-          actions={
-            <button
-              type="button"
-              onClick={runAnalysis}
-              disabled={analysis === "running"}
-              className="rounded-sm border border-info/50 bg-info/15 px-3 py-2 font-mono text-[11px] tracking-[0.1em] text-info uppercase disabled:opacity-50"
-            >
-              {analysis === "running" ? pipelineStage || "Analysis running…" : "Run analysis"}
-            </button>
+          title={
+            analysis === "running"
+              ? "Generating recovery paths…"
+              : "No recovery paths generated yet."
+          }
+          description={
+            analysis === "running"
+              ? `The reconstruction agent is analyzing the disruption (${pipelineStage || "running"}). Paths appear automatically once the analysis completes — no further action needed.`
+              : "The reconstruction agent generates alternative capability configurations automatically once the disruption analysis has run."
           }
         />
       ) : (

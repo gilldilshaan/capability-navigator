@@ -103,10 +103,15 @@ Responses are plain JSON matching the types in `src/types/parallax.ts`.
 `AgentWorkflow.steps` = `AgentStep[]` (status `QUEUED \| RUNNING \| COMPLETE \| FAILED`, per-agent message,
 optional `reasoning`). `requiresHumanApproval`, `compliance` and `recommendation` ride on the workflow.
 
-### 3.5 End-to-end pipeline (what “Run analysis” triggers)
+### 3.5 End-to-end pipeline (automatic after a single initial action)
+
+The pipeline is no longer gated behind a manual "Run analysis" click. Once the app
+hydrates master data and an active disruption is present, the full chain runs
+automatically — the user performs one action (load / open the incident) and the
+data flows end to end:
 
 ```
-injectDisruption(resource?)            disruptionService.injectDisruption      → Disruption
+load app → master data hydrated (auto)
         ↓
 graphService.analyzeGraph              → GraphAnalysisResult   (capability identified)
         ↓
@@ -114,10 +119,13 @@ agentService.startWorkflow + poll      → AgentWorkflow         (agent steps st
         ↓
 recoveryService.getRecoveryPaths       → RecoveryResult        (Path A/B/C + recommendation)
         ↓
-recoveryStatus = "AWAITING APPROVAL"   → audit page decision (Flow F)
+recoveryStatus = "AWAITING APPROVAL"   → audit page decision (the only human-required step)
 ```
 
-The store updates the UI **after each stage resolves** (progressive disclosure — no fake timers).
+The store updates the UI **after each stage resolves** (progressive disclosure — no fake
+timers) and advances automatically between stages. The user only interacts for a real
+decision: approving/rejecting a recovery path, requesting an alternative, or choosing
+chaos-failure toggles.
 
 ## 4. Data flow after integration
 

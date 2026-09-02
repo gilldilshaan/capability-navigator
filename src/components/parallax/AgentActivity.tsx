@@ -16,7 +16,6 @@ export function AgentActivity({ compact = false }: { compact?: boolean }) {
     analysis,
     analysisProgress,
     pipelineStage,
-    runAnalysis,
     agentPanelOpen,
     setAgentPanelOpen,
     recoveryStatus,
@@ -97,17 +96,20 @@ export function AgentActivity({ compact = false }: { compact?: boolean }) {
                 </div>
               </div>
             ) : (
-              <button
-                type="button"
-                onClick={runAnalysis}
-                className="w-full rounded-sm border border-ai/50 bg-ai/12 px-2.5 py-2 font-mono text-[11px] tracking-[0.1em] text-ai uppercase transition-colors hover:bg-ai/22"
-              >
-                {analysis === "complete"
-                  ? "Re-run analysis"
-                  : analysis === "error"
-                    ? "Retry analysis"
-                    : "Run analysis"}
-              </button>
+              <div className="panel-inset px-2.5 py-2">
+                <p className="label-xs">
+                  {analysis === "error"
+                    ? "Analysis failed"
+                    : analysis === "complete"
+                      ? "Analysis complete"
+                      : "Analyzing automatically"}
+                </p>
+                <p className="mt-0.5 text-[11px] text-muted-foreground">
+                  {analysis === "error"
+                    ? "The capabilities were not identified. See the system banner for details."
+                    : "Agents run automatically — review the recovery paths and approve one."}
+                </p>
+              </div>
             )}
           </div>
 

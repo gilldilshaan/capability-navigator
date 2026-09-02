@@ -56,7 +56,6 @@ function Overview() {
     openIncident,
     incident,
     analysis,
-    runAnalysis,
     paths,
     recommendedPathId,
     pathsGenerated,
@@ -272,16 +271,12 @@ function Overview() {
           reasoning={
             pathsGenerated && recommendedPath
               ? recommendedPath.rationale
-              : "Run the disruption analysis: agents decompose the lost capability, discover enterprise resources and score every viable recovery configuration."
+              : "Decomposing the lost capability — agents are mapping dependencies and scoring every viable recovery configuration automatically."
           }
           benefits={benefits}
           risks={risks}
           requiresHumanApproval
-          action={
-            pathsGenerated
-              ? { label: "Explore recovery", to: "/recovery-paths" }
-              : { label: "Run capability analysis", onClick: runAnalysis }
-          }
+          action={pathsGenerated ? { label: "Explore recovery", to: "/recovery-paths" } : undefined}
         />
       </div>
 

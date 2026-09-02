@@ -31,12 +31,7 @@ import * as graphService from "@/services/graphService";
 import * as masterService from "@/services/masterService";
 import * as recoveryService from "@/services/recoveryService";
 import * as simulationService from "@/services/simulationService";
-import {
-  apiConfig,
-  getLastFallbackReason,
-  type ApiSource,
-  type HealthStatus,
-} from "@/services";
+import { apiConfig, getLastFallbackReason, type ApiSource, type HealthStatus } from "@/services";
 import type {
   AgentWorkflow,
   ApprovalDecisionType,
@@ -176,7 +171,6 @@ interface ParallaxApi extends ParallaxState {
   setPresentation: (on: boolean) => void;
   setAgentPanelOpen: (on: boolean) => void;
   startDemo: () => void;
-  nextDemoStep: () => void;
   demoTotalSteps: number;
   stopDemo: () => void;
   resetDemo: () => void;
@@ -185,6 +179,11 @@ interface ParallaxApi extends ParallaxState {
 }
 
 const BASE_RESILIENCE = 87;
+
+/** Delay between automatic demo stages — long enough for each stage to be read. */
+const DEMO_AUTO_MS = 2500;
+/** Small pause before the tour starts so the page settles. */
+const DEMO_HOLD_MS = 600;
 
 const initialState: ParallaxState = {
   incident: activeDisruption,
@@ -337,7 +336,18 @@ export function ParallaxProvider({ children }: { children: ReactNode }) {
   /* Lets reset/unmount cancel an in-flight workflow poll. */
   const pollAbortRef = useRef<AbortController | null>(null);
   const pipelineRunningRef = useRef(false);
+  /** True once the automatic pipeline has run after hydration to avoid double-starts. */
+  const autoRanRef = useRef(false);
   useEffect(() => () => pollAbortRef.current?.abort(), []);
+
+  /* Demo tour timer so start/reset/stop invalidate in-flight schedules. */
+  const demoTimerRef = useRef<number | null>(null);
+  const clearDemoTimer = useCallback(() => {
+    if (demoTimerRef.current !== null) {
+      window.clearTimeout(demoTimerRef.current);
+      demoTimerRef.current = null;
+    }
+  }, []);
 
   const patch = useCallback((p: Partial<ParallaxState>) => {
     setState((s) => ({ ...s, ...p }));
@@ -637,6 +647,27 @@ export function ParallaxProvider({ children }: { children: ReactNode }) {
     void executePipeline(stateRef.current.incident);
   }, [executePipeline]);
 
+  /* ------------------------------------------------------------------ */
+  /* Automatic pipeline — the single initial action. Once hydration      */
+  /* settles and an active disruption is present, the full analysis      */
+  /* chain runs without any further clicks: graph → agents → recovery.   */
+  /* The user only interacts later for a real decision (approval/chaos). */
+  /* ------------------------------------------------------------------ */
+
+  const autoRunAnalysis = useCallback(() => {
+    if (autoRanRef.current) return;
+    autoRanRef.current = true;
+    const hasActive = (stateRef.current.activeDisruptions ?? 0) > 0;
+    if (hasActive) void executePipeline(stateRef.current.incident);
+  }, [executePipeline]);
+
+  /* Kick the pipeline once after the on-mount hydration pass settles. */
+  useEffect(() => {
+    if (!state.hydrated) return;
+    autoRunAnalysis();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.hydrated]);
+
   /** Flow A — user selected a supplier/resource; inject it, then run the pipeline. */
   const injectDisruption = useCallback(
     (target: InjectDisruptionTarget) => {
@@ -891,71 +922,126 @@ export function ParallaxProvider({ children }: { children: ReactNode }) {
   const dismissNotice = useCallback(() => patch({ backendNotice: null }), [patch]);
 
   const stopDemo = useCallback(() => {
+    clearDemoTimer();
     patch({ demoRunning: false, demoLabel: "", demoStep: 0 });
-  }, [patch]);
+  }, [clearDemoTimer, patch]);
 
   const resetDemo = useCallback(() => {
+    clearDemoTimer();
     pollAbortRef.current?.abort();
     pipelineRunningRef.current = false;
+    autoRanRef.current = false;
     setState({ ...initialState, presentation: stateRef.current.presentation });
     navigate({ to: "/" });
-  }, [navigate]);
+  }, [clearDemoTimer, navigate]);
 
-  /** Manual walkthrough: every step is advanced by a click, never by a timer. */
-  const demoSteps = useMemo(
+  /** Demo tour. Data stages (`auto`) advance on their own; `decision` stages
+      pause until the user actually performs the action (`decided` returns true),
+      then the tour resumes automatically. */
+  type DemoStep = {
+    label: string;
+    kind: "auto" | "decision";
+    run: () => void;
+    decided?: (s: ParallaxState) => boolean;
+  };
+  const demoSteps = useMemo<DemoStep[]>(
     () => [
       {
         label: "Disruption detected",
+        kind: "auto",
         run: () => {
           patch({ incidentOpen: true });
           navigate({ to: "/disruptions" });
         },
       },
-      { label: "Agentic analysis", run: () => runAnalysis() },
-      { label: "Capability identified", run: () => navigate({ to: "/capability-map" }) },
-      { label: "Resource discovery", run: () => navigate({ to: "/resources" }) },
-      { label: "Recovery paths generated", run: () => navigate({ to: "/recovery-paths" }) },
+      { label: "Agentic analysis", kind: "auto", run: () => runAnalysis() },
+      {
+        label: "Capability identified",
+        kind: "auto",
+        run: () => navigate({ to: "/capability-map" }),
+      },
+      { label: "Resource discovery", kind: "auto", run: () => navigate({ to: "/resources" }) },
+      {
+        label: "Recovery paths generated",
+        kind: "auto",
+        run: () => navigate({ to: "/recovery-paths" }),
+      },
       {
         label: "Recommendation opened",
+        kind: "auto",
         run: () => patch({ selectedPathId: stateRef.current.recommendedPathId ?? "C" }),
       },
-      { label: "Human approval", run: () => navigate({ to: "/audit" }) },
-      { label: "Recovery approved", run: () => approveRecovery() },
+      {
+        label: "Human approval",
+        kind: "decision",
+        run: () => navigate({ to: "/audit" }),
+        decided: (s) =>
+          s.recoveryStatus === "APPROVED" ||
+          s.recoveryStatus === "REJECTED" ||
+          s.recoveryStatus === "ALTERNATIVE REQUESTED",
+      },
       {
         label: "Break My Supply Chain",
+        kind: "decision",
         run: () => {
           navigate({ to: "/break-my-supply-chain" });
           patch({ chaosToggles: ["supplier", "cert"] });
         },
+        decided: (s) => s.chaosResult !== null,
       },
-      { label: "Chaos simulation", run: () => runChaos() },
     ],
-    [approveRecovery, navigate, patch, runAnalysis, runChaos],
+    [navigate, patch, runAnalysis],
+  );
+
+  const demoStepsRef = useRef<DemoStep[]>(demoSteps);
+  demoStepsRef.current = demoSteps;
+  const demoRunningRef = useRef(false);
+  demoRunningRef.current = state.demoRunning;
+
+  /** Run step `index` (0-based) and display it. Auto steps chain to the next
+      step after a delay; decision steps pause until the user acts, at which
+      point the effect below resumes the tour. */
+  const runStep = useCallback(
+    (index: number) => {
+      if (!demoRunningRef.current) return;
+      const step = demoStepsRef.current[index];
+      if (!step) {
+        patch({ demoRunning: false, demoStep: 0, demoLabel: "" });
+        return;
+      }
+      step.run();
+      patch({ demoStep: index + 1, demoLabel: step.label });
+      if (step.kind === "auto") {
+        demoTimerRef.current = window.setTimeout(() => runStep(index + 1), DEMO_AUTO_MS);
+      }
+    },
+    [patch],
   );
 
   const startDemo = useCallback(() => {
+    clearDemoTimer();
     pollAbortRef.current?.abort();
     pipelineRunningRef.current = false;
+    autoRanRef.current = false;
     setState({
       ...initialState,
       presentation: stateRef.current.presentation,
       demoRunning: true,
       demoStep: 0,
-      demoLabel: "Ready — advance step by step",
+      demoLabel: demoSteps[0]?.label ?? "",
     });
     navigate({ to: "/" });
-  }, [navigate]);
+    demoTimerRef.current = window.setTimeout(() => runStep(0), DEMO_HOLD_MS);
+  }, [clearDemoTimer, demoSteps, navigate, runStep]);
 
-  const nextDemoStep = useCallback(() => {
-    const index = stateRef.current.demoStep;
-    const step = demoSteps[index];
-    if (!step) {
-      patch({ demoRunning: false, demoStep: 0, demoLabel: "" });
-      return;
-    }
-    patch({ demoStep: index + 1, demoLabel: step.label });
-    step.run();
-  }, [demoSteps, patch]);
+  /** When a decision step's predicate is met, resume the tour at the
+      following step (running the next step, or ending at the last one). */
+  useEffect(() => {
+    const current = state.demoStep - 1;
+    const step = demoStepsRef.current[current];
+    if (!step || step.kind !== "decision") return;
+    if (step.decided?.(state) === true) runStep(state.demoStep);
+  }, [state, runStep]);
 
   const value = useMemo<ParallaxApi>(
     () => ({
@@ -977,7 +1063,6 @@ export function ParallaxProvider({ children }: { children: ReactNode }) {
       setPresentation,
       setAgentPanelOpen,
       startDemo,
-      nextDemoStep,
       demoTotalSteps: demoSteps.length,
       stopDemo,
       resetDemo,
@@ -1000,7 +1085,6 @@ export function ParallaxProvider({ children }: { children: ReactNode }) {
       setPresentation,
       setAgentPanelOpen,
       startDemo,
-      nextDemoStep,
       demoSteps,
       stopDemo,
       resetDemo,
