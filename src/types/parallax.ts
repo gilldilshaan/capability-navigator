@@ -376,3 +376,43 @@ export interface CapabilityNetwork {
   nodes: GraphNode[];
   edges: GraphEdge[];
 }
+
+/* ----------------------------- LLM analysis ------------------------------- */
+
+export interface LlmAnalysisResponse {
+  disruptionId: string;
+  summary: string;
+  explanation: string;
+  recoveryStrategies: Array<{
+    id: string;
+    title: string;
+    reasoning: string;
+    risk: string;
+    tradeoff: string;
+    timelineDays: number;
+  }>;
+  recommendedAction: string;
+  risks: string[];
+}
+
+/* --------------------- endpoint aggregate response types ------------------ */
+
+export interface GraphResponse {
+  network: CapabilityNetwork;
+  hiddenDependencies: HiddenDependency[];
+}
+
+export interface RecoveryResponse {
+  result: RecoveryResult;
+  approvals: ApprovalRequest[];
+}
+
+export interface SimulationResponse {
+  result: SimulationResult;
+  history: SimulationResult[];
+}
+
+export interface AgentsResponse {
+  agents: AgentDef[];
+  workflows: AgentWorkflow[];
+}

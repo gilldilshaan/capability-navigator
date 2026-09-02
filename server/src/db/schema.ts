@@ -191,6 +191,122 @@ export const approvalRequests = sqliteTable(
   (t) => [index("idx_approvals_status_disruption").on(t.status, t.disruptionId)],
 );
 
+/* ------------------------------------------------------------------ */
+/* Graph / network tables (seeded from data.ts, read by graph engine) */
+/* ------------------------------------------------------------------ */
+
+export const graphNodes = sqliteTable(
+  "graph_nodes",
+  {
+    id: text("id").primaryKey(),
+    label: text("label").notNull(),
+    kind: text("kind").notNull(),
+    x: integer("x").notNull(),
+    y: integer("y").notNull(),
+    status: text("status").notNull(),
+    risk: text("risk").notNull(),
+    meta: text("meta").notNull().default(""),
+  },
+  (t) => [index("idx_graph_nodes_kind").on(t.kind)],
+);
+
+export const graphEdges = sqliteTable(
+  "graph_edges",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    from: text("from_node").notNull(),
+    to: text("to_node").notNull(),
+    critical: integer("critical", { mode: "boolean" }).notNull().default(false),
+  },
+  (t) => [index("idx_graph_edges_from").on(t.from)],
+);
+
+export const failureTogglesTable = sqliteTable(
+  "failure_toggles",
+  {
+    id: text("id").primaryKey(),
+    label: text("label").notNull(),
+    detail: text("detail").notNull(),
+    resilienceHit: integer("resilience_hit").notNull(),
+    removes: text("removes", { mode: "json" }).$type<string[]>().notNull(),
+  },
+);
+
+export const hiddenDependenciesTable = sqliteTable(
+  "hidden_dependencies",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    impact: text("impact").notNull(),
+    alternatives: text("alternatives").notNull(),
+    redundancy: integer("redundancy").notNull(),
+    target: integer("target").notNull(),
+    mitigation: text("mitigation").notNull(),
+    sharedBy: text("shared_by", { mode: "json" }).$type<string[]>().notNull(),
+  },
+);
+
+/* ------------------------------------------------------------------ */
+/* Workflow / agent persistence (replaces in-memory adapter store)     */
+/* ------------------------------------------------------------------ */
+
+export const workflows = sqliteTable(
+  "workflows",
+  {
+    id: text("id").primaryKey(),
+    disruptionId: text("disruption_id")
+      .notNull()
+      .references(() => disruptions.id),
+    status: text("status").notNull().default("COMPLETE"),
+    progress: integer("progress").notNull().default(100),
+    resultJson: text("result_json").notNull(),
+    createdAt: text("created_at").notNull(),
+    updatedAt: text("updated_at").notNull(),
+  },
+  (t) => [index("idx_workflows_disruption").on(t.disruptionId)],
+);
+
+/* ------------------------------------------------------------------ */
+/* Simulation results (persisted chaos runs)                           */
+/* ------------------------------------------------------------------ */
+
+export const simulations = sqliteTable(
+  "simulations",
+  {
+    id: text("id").primaryKey(),
+    failureIds: text("failure_ids", { mode: "json" }).$type<string[]>().notNull(),
+    removed: text("removed", { mode: "json" }).$type<string[]>().notNull(),
+    resilienceBefore: integer("resilience_before").notNull(),
+    resilienceAfter: integer("resilience_after").notNull(),
+    affectedCapabilitiesJson: text("affected_capabilities_json").notNull(),
+    vulnerabilitiesJson: text("vulnerabilities_json").notNull(),
+    supplierRedundancy: integer("supplier_redundancy").notNull(),
+    capabilityRedundancy: integer("capability_redundancy").notNull(),
+    createdAt: text("created_at").notNull(),
+  },
+  (t) => [index("idx_simulations_created").on(t.createdAt)],
+);
+
+/* ------------------------------------------------------------------ */
+/* LLM analysis results (cached per disruption)                        */
+/* ------------------------------------------------------------------ */
+
+export const llmAnalyses = sqliteTable(
+  "llm_analyses",
+  {
+    id: text("id").primaryKey(),
+    disruptionId: text("disruption_id").notNull(),
+    analysisType: text("analysis_type").notNull(),
+    inputJson: text("input_json").notNull(),
+    outputJson: text("output_json").notNull(),
+    model: text("model"),
+    durationMs: integer("duration_ms"),
+    validation: text("validation"),
+    createdAt: text("created_at").notNull(),
+  },
+  (t) => [index("idx_llm_disruption").on(t.disruptionId)],
+);
+
 export type SupplierRow = typeof suppliers.$inferSelect;
 export type FactoryRow = typeof factories.$inferSelect;
 export type MachineRow = typeof machines.$inferSelect;
@@ -201,4 +317,11 @@ export type CapabilityRow = typeof capabilities.$inferSelect;
 export type CapabilityRequirementRow = typeof capabilityRequirements.$inferSelect;
 export type DisruptionRow = typeof disruptions.$inferSelect;
 export type ApprovalRequestRow = typeof approvalRequests.$inferSelect;
+export type GraphNodeRow = typeof graphNodes.$inferSelect;
+export type GraphEdgeRow = typeof graphEdges.$inferSelect;
+export type FailureToggleRow = typeof failureTogglesTable.$inferSelect;
+export type HiddenDependencyRow = typeof hiddenDependenciesTable.$inferSelect;
+export type WorkflowRow = typeof workflows.$inferSelect;
+export type SimulationRow = typeof simulations.$inferSelect;
+export type LlmAnalysisRow = typeof llmAnalyses.$inferSelect;
 export type NewDisruption = typeof disruptions.$inferInsert;

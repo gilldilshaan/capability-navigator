@@ -4,6 +4,10 @@ import {
   activeDisruption,
   capabilities as sourceCapabilities,
   factories as sourceFactories,
+  failureToggles as sourceFailureToggles,
+  graphEdges as sourceGraphEdges,
+  graphNodes as sourceGraphNodes,
+  hiddenDependencies as sourceHiddenDependencies,
   inventory as sourceInventory,
   logisticsRoutes as sourceRoutes,
   machines as sourceMachines,
@@ -20,6 +24,10 @@ import {
   capabilityRequirements,
   disruptions,
   factories,
+  failureTogglesTable,
+  graphEdges,
+  graphNodes,
+  hiddenDependenciesTable,
   inventoryItems,
   logisticsRoutes,
   machines,
@@ -179,6 +187,72 @@ export function seedDatabase(): void {
     })
     .onConflictDoNothing()
     .run();
+
+  // Graph nodes
+  for (const node of sourceGraphNodes) {
+    db.insert(graphNodes)
+      .values({
+        id: node.id,
+        label: node.label,
+        kind: node.kind,
+        x: node.x,
+        y: node.y,
+        status: node.status,
+        risk: node.risk,
+        meta: node.meta,
+      })
+      .onConflictDoNothing()
+      .run();
+  }
+
+  // Graph edges (auto-increment PK → guard against re-insert on repeat seeds by
+  // checking the natural from/to key instead of relying on conflict handling).
+  const existingEdges = new Set(
+    db.select().from(graphEdges).all().map((e) => `${e.from}\u0000${e.to}`),
+  );
+  for (const edge of sourceGraphEdges) {
+    const key = `${edge.from}\u0000${edge.to}`;
+    if (existingEdges.has(key)) continue;
+    db.insert(graphEdges)
+      .values({
+        from: edge.from,
+        to: edge.to,
+        critical: edge.critical ?? false,
+      })
+      .run();
+    existingEdges.add(key);
+  }
+
+  // Failure toggles
+  for (const ft of sourceFailureToggles) {
+    db.insert(failureTogglesTable)
+      .values({
+        id: ft.id,
+        label: ft.label,
+        detail: ft.detail,
+        resilienceHit: ft.resilienceHit,
+        removes: ft.removes,
+      })
+      .onConflictDoNothing()
+      .run();
+  }
+
+  // Hidden dependencies
+  for (const hd of sourceHiddenDependencies) {
+    db.insert(hiddenDependenciesTable)
+      .values({
+        id: hd.id,
+        name: hd.name,
+        impact: hd.impact,
+        alternatives: hd.alternatives,
+        redundancy: hd.redundancy,
+        target: hd.target,
+        mitigation: hd.mitigation,
+        sharedBy: hd.sharedBy,
+      })
+      .onConflictDoNothing()
+      .run();
+  }
 }
 
 const isMain = (): boolean =>
@@ -200,6 +274,10 @@ if (isMain()) {
     capabilityRequirements: db.select().from(capabilityRequirements).all().length,
     disruptions: db.select().from(disruptions).all().length,
     approvalRequests: db.select().from(approvalRequests).all().length,
+    graphNodes: db.select().from(graphNodes).all().length,
+    graphEdges: db.select().from(graphEdges).all().length,
+    failureToggles: db.select().from(failureTogglesTable).all().length,
+    hiddenDependencies: db.select().from(hiddenDependenciesTable).all().length,
   };
 
   console.log(`[parallax] seed complete — database: ${config.dbPath}`);

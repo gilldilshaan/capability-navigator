@@ -1,7 +1,12 @@
+import { agents } from "./agents";
+import { analysis } from "./analysis";
 import { approvals } from "./approvals";
 import { disruptions } from "./disruptions";
+import { graph } from "./graph";
 import { health } from "./health";
 import { master } from "./master";
+import { recovery } from "./recovery";
+import { simulation } from "./simulation";
 
 /** API error carrying an HTTP status + machine-readable code. */
 export class HttpError extends Error {
@@ -55,6 +60,22 @@ export const routes: RouteDef[] = [
 
   { method: "POST", segments: ["api", "recovery", "approvals"], handler: approvals.create },
   { method: "GET", segments: ["api", "recovery", "approvals", ":id"], handler: approvals.byId },
+
+  { method: "POST", segments: ["api", "graph", "analyze"], handler: graph.analyze },
+  { method: "POST", segments: ["api", "graph", "analyze-with-llm"], handler: analysis.analyzeWithLlm },
+  { method: "GET", segments: ["api", "graph", "network"], handler: graph.network },
+  { method: "GET", segments: ["api", "graph", "hidden-dependencies"], handler: graph.hiddenDeps },
+
+  { method: "POST", segments: ["api", "recovery", "paths"], handler: recovery.paths },
+
+  { method: "POST", segments: ["api", "simulation", "run"], handler: simulation.run },
+  { method: "GET", segments: ["api", "simulation", "failure-toggles"], handler: simulation.failureToggles },
+  { method: "GET", segments: ["api", "simulation", "history"], handler: simulation.history },
+
+  { method: "GET", segments: ["api", "agents"], handler: agents.list },
+  { method: "POST", segments: ["api", "agents", "workflows"], handler: agents.startWorkflow },
+  { method: "GET", segments: ["api", "agents", "workflows"], handler: agents.listWorkflows },
+  { method: "GET", segments: ["api", "agents", "workflows", ":id"], handler: agents.byId },
 ];
 
 export interface MatchedRoute {
