@@ -8,22 +8,29 @@ import { config } from "../config";
 import * as schema from "./schema";
 
 /**
- * Resolve the SQLite file to an actually-writable location.
+ * Resolve the SQLite file to an actually-writable, absolute location.
  *
- * Local dev and Railway persist under the configured path. On read-only
- * serverless hosts (e.g. Vercel) that directory cannot be created, so we fall
- * back to the per-host temp dir. The data is regenerable demo seed data, so a
- * runtime-temporary location is appropriate there and never touches the
- * read-only filesystem.
+ * Local dev and Railway persist under the configured path (e.g.
+ * `server/data/parallax.db`). On read-only serverless hosts such as Vercel the
+ * configured path resolves to a location under the read-only filesystem
+ * (e.g. `/var/server/data/parallax.db`) and cannot be created. We detect that
+ * and fall back to the per-host temp dir first, then to an in-memory database
+ * as a last resort — so importing this module never crashes a read-only host.
+ * The data is regenerable demo seed data, so temporary storage is appropriate.
  */
-function resolveWritableDbPath(configured: string): string {
+function resolveWritableDbPath(configured: string): string | ":memory:" {
   try {
-    mkdirSync(path.dirname(configured), { recursive: true });
+    const dir = path.dirname(configured);
+    if (dir && dir !== ".") mkdirSync(dir, { recursive: true });
     return configured;
   } catch {
-    const tmpDir = path.join(os.tmpdir(), "parallax");
-    mkdirSync(tmpDir, { recursive: true });
-    return path.join(tmpDir, path.basename(configured));
+    try {
+      const tmpDir = path.join(os.tmpdir(), "parallax");
+      mkdirSync(tmpDir, { recursive: true });
+      return path.join(tmpDir, path.basename(configured) || "parallax.db");
+    } catch {
+      return ":memory:";
+    }
   }
 }
 
